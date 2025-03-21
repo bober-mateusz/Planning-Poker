@@ -3,9 +3,9 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Card, ButtonBase } from "@mui/material";
 
-function EstimateCards() {
+function EstimateCards(props) {
   const estimates = ["?", "0.5", "1", "2", "3", "5", "8"];
-
+  const {handleOnClick} = props
   return (
     <Box
       display="flex"
@@ -17,6 +17,7 @@ function EstimateCards() {
       {estimates.map((value) => (
         <ButtonBase key={value} sx={{ borderRadius: 2 }}>
           <Card
+            onClick={() => handleOnClick(value)}
             sx={{
               width: 80,
               height: 80,

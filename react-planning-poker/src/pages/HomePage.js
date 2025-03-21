@@ -2,7 +2,7 @@ import * as React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link for navigation
 
-const formSection = styled({});
+// const formSection = styled({});
 
 export default function HomePage() {
   return (
@@ -17,6 +17,7 @@ export default function HomePage() {
         background: "", // Blue gradient
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundColor: "navy"
       }}
     >
       {/* Title */}

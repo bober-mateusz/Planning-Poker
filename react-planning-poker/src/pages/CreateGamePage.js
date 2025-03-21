@@ -26,7 +26,6 @@ export default function CreateGamePage() {
       >
         Create a game!
       </Typography>
-      <Form>
         <TextField
           required
           id="outlined-required"
@@ -37,7 +36,6 @@ export default function CreateGamePage() {
             color: "red",
           }}
         />
-      </Form>
     </Box>
   );
 }
