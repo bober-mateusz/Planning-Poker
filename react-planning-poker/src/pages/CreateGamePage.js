@@ -26,16 +26,16 @@ export default function CreateGamePage() {
       >
         Create a game!
       </Typography>
-        <TextField
-          required
-          id="outlined-required"
-          placeholder="Game Name here"
-          sx={{
-            backgroundColor:
-              "linear-gradient(135deg, rgba(0, 0, 255, 0.7), rgba(0, 0, 128, 0.7))",
-            color: "red",
-          }}
-        />
+      <TextField
+        required
+        id="outlined-required"
+        placeholder="Game Name here"
+        sx={{
+          backgroundColor:
+            "linear-gradient(135deg, rgba(0, 0, 255, 0.7), rgba(0, 0, 128, 0.7))",
+          color: "red",
+        }}
+      />
     </Box>
   );
 }
