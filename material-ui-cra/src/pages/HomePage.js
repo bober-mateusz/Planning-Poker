@@ -2,6 +2,8 @@ import * as React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link for navigation
 
+const formSection = styled({});
+
 export default function HomePage() {
   return (
     <Box
@@ -15,7 +17,6 @@ export default function HomePage() {
         background: "", // Blue gradient
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundColor: "navy"
       }}
     >
       {/* Title */}
