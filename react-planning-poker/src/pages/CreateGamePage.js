@@ -1,41 +1,39 @@
 import * as React from "react";
-import { Box, TextField, Typography } from "@mui/material";
-import { Form } from "react-router-dom";
-
+import { Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import FlexBox from "../components/FlexBox/FlexBox";
+import GenericTextField from "../components/Input/GenericTextField";
+import { Paper } from "@mui/material";
+import GenericButton from "../components/Input/GenericButton";
 export default function CreateGamePage() {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
-      padding={3}
-      sx={{
-        background:
-          "linear-gradient(135deg, rgba(0, 0, 255, 0.7), rgba(0, 0, 128, 0.7))", // Blue gradient
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <FlexBox>
       {/* Title */}
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        sx={{ marginBottom: 4, color: "white" }}
-      >
+      <Typography variant="h4" fontWeight="bold" sx={{ color: "white" }}>
         Create a game!
       </Typography>
-      <TextField
-        required
-        id="outlined-required"
-        placeholder="Game Name here"
+
+      <Paper
         sx={{
-          backgroundColor:
-            "linear-gradient(135deg, rgba(0, 0, 255, 0.7), rgba(0, 0, 128, 0.7))",
-          color: "red",
+          display: "flex",
+          p: 4,
+          m: 2,
+          alignContent: "center",
+          justifyContent: "flex-start",
+          flexDirection: "column",
+          gap: 4,
         }}
-      />
-    </Box>
+      >
+        <GenericTextField
+          placeholder="Game Room Name"
+          label="Game name"
+          variant="filled"
+        ></GenericTextField>
+
+        <Link to="/planning-poker" style={{ textDecoration: "none" }}>
+          <GenericButton sx={{ width: "100%" }}>Enter Game</GenericButton>
+        </Link>
+      </Paper>
+    </FlexBox>
   );
 }

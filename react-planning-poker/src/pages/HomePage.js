@@ -1,24 +1,12 @@
 import * as React from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Button, Typography, Paper } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link for navigation
+import FlexBox from "../components/FlexBox/FlexBox";
+import GenericButton from "../components/Input/GenericButton";
 
 export default function HomePage() {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
-      padding={3}
-      sx={{
-        background: "", // Blue gradient
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundColor: "navy"
-      }}
-    >
-      {/* Title */}
+    <FlexBox>
       <Typography
         variant="h3"
         fontWeight="bold"
@@ -26,8 +14,6 @@ export default function HomePage() {
       >
         Create a game!
       </Typography>
-
-      {/* Description */}
       <Typography
         variant="h6"
         sx={{ marginBottom: 4, color: "white", textAlign: "center" }}
@@ -35,10 +21,8 @@ export default function HomePage() {
         A simple way to estimate and plan your projects with your team. Click
         below to start a new planning session.
       </Typography>
-
-      {/* Navigation Button to Planning Poker */}
       <Link to="/create-game" style={{ textDecoration: "none" }}>
-        <Button
+        <GenericButton
           variant="contained"
           color="primary"
           size="large"
@@ -50,8 +34,8 @@ export default function HomePage() {
           }}
         >
           Start Planning Poker
-        </Button>
+        </GenericButton>
       </Link>
-    </Box>
+    </FlexBox>
   );
 }
