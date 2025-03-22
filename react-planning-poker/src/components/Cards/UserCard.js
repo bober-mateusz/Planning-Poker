@@ -1,40 +1,31 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { Card, CardContent } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import * as React from 'react';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { Card, CardContent } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
-  width: 200,
-  textAlign: "center",
-  borderRadius: theme.shape.borderRadius * 2, // Uses MUI theme
-  overflow: "hidden",
-  boxShadow: theme.shadows[3],
+  minWidth: 220,
+  borderRadius: theme.shape.borderRadius * 3, // Uses MUI theme
+  boxShadow: theme.shadows[12], // Adds a shadow from MUI theme
 }));
 
 const PointsSection = styled(CardContent)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  minHeight: 120,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  minHeight: 200,
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText, // Ensures readable text
 }));
 
 const UsernameSection = styled(CardContent)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  minHeight: 60,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 80,
   backgroundColor: theme.palette.background.paper,
-}));
-
-const Divider = styled(Box)(({ theme }) => ({
-  width: "100%",
-  height: 2,
-  backgroundColor: theme.palette.divider,
 }));
 
 // Component
@@ -47,8 +38,6 @@ function UserCard({ userName, points }) {
             {points}
           </Typography>
         </PointsSection>
-
-        <Divider />
 
         <UsernameSection>
           <Typography variant="h6" fontWeight="500">
