@@ -1,12 +1,12 @@
-import React from "react";
-import { Button } from "@mui/material";
+import React from 'react';
+import { Button } from '@mui/material';
 
 // Make the button customizable with props
 export default function GenericButton({
   children, // To allow dynamic text inside the button
   onClick, // To handle button click events
-  variant = "contained", // Default variant (can be overridden)
-  color = "primary", // Default color (can be overridden)
+  variant = 'contained', // Default variant (can be overridden)
+  color = 'primary', // Default color (can be overridden)
   sx = {}, // For custom styling
   ...props // To handle any other props
 }) {

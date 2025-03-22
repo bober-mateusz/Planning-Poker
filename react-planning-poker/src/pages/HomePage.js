@@ -1,8 +1,8 @@
-import * as React from "react";
-import { Button, Typography, Paper } from "@mui/material";
-import { Link } from "react-router-dom"; // Import Link for navigation
-import FlexBox from "../components/FlexBox/FlexBox";
-import GenericButton from "../components/Input/GenericButton";
+import * as React from 'react';
+import { Button, Typography, Paper } from '@mui/material';
+import { Link } from 'react-router-dom'; // Import Link for navigation
+import FlexBox from '../components/FlexBox/FlexBox';
+import GenericButton from '../components/Input/GenericButton';
 
 export default function HomePage() {
   return (
@@ -10,27 +10,27 @@ export default function HomePage() {
       <Typography
         variant="h3"
         fontWeight="bold"
-        sx={{ marginBottom: 4, color: "white" }}
+        sx={{ marginBottom: 4, color: 'white' }}
       >
         Create a game!
       </Typography>
       <Typography
         variant="h6"
-        sx={{ marginBottom: 4, color: "white", textAlign: "center" }}
+        sx={{ marginBottom: 4, color: 'white', textAlign: 'center' }}
       >
         A simple way to estimate and plan your projects with your team. Click
         below to start a new planning session.
       </Typography>
-      <Link to="/create-game" style={{ textDecoration: "none" }}>
+      <Link to="/create-game" style={{ textDecoration: 'none' }}>
         <GenericButton
           variant="contained"
           color="primary"
           size="large"
           sx={{
-            padding: "10px 20px",
+            padding: '10px 20px',
             borderRadius: 3,
-            fontSize: "16px",
-            fontWeight: "bold",
+            fontSize: '16px',
+            fontWeight: 'bold',
           }}
         >
           Start Planning Poker

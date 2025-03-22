@@ -1,9 +1,9 @@
-import React from "react";
-import { TextField } from "@mui/material";
+import React from 'react';
+import { TextField } from '@mui/material';
 
 export default function GenericTextField({
-  label = "Enter text here", // Default label
-  placeholder = "Type here",
+  label = 'Enter text here', // Default label
+  placeholder = 'Type here',
   value,
   onChange,
   sx = {},

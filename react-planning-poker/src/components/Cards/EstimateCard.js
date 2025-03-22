@@ -1,6 +1,6 @@
-import React from "react";
-import Typography from "@mui/material/Typography";
-import { Card, ButtonBase } from "@mui/material";
+import React from 'react';
+import Typography from '@mui/material/Typography';
+import { Card, ButtonBase } from '@mui/material';
 
 export default function EstimateCard({ value, handleOnClick }) {
   return (
@@ -10,13 +10,13 @@ export default function EstimateCard({ value, handleOnClick }) {
         sx={{
           width: { xs: 60, sm: 80, md: 100 }, // Responsive width
           height: { xs: 60, sm: 80, md: 100 }, // Responsive height
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          cursor: "pointer",
-          transition: "0.2s",
-          "&:hover": { bgcolor: "primary.light" }, // Accessing theme color
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          cursor: 'pointer',
+          transition: '0.2s',
+          '&:hover': { bgcolor: 'primary.light' }, // Accessing theme color
           borderRadius: (theme) => theme.shape.borderRadius * 1, // Accessing theme shape value
           boxShadow: (theme) => theme.shadows[7], // Accessing theme shadow
           backgroundColor: (theme) => theme.palette.primary.contrastText, // Accessing theme color

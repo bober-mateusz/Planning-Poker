@@ -1,20 +1,20 @@
-import * as React from "react";
-import { Box, Typography } from "@mui/material";
-import UserCard from "../components/Cards/UserCard";
-import EstimateCards from "../components/EstimateCards";
-import FlexBox from "../components/FlexBox/FlexBox";
+import * as React from 'react';
+import { Box, Typography } from '@mui/material';
+import UserCard from '../components/Cards/UserCard';
+import EstimateCards from '../components/EstimateCards';
+import FlexBox from '../components/FlexBox/FlexBox';
 
 // Sample user data
-const userNames = ["Hello", "Hello2"];
+const userNames = ['Hello', 'Hello2'];
 
 export default function PlanningPokerPage() {
   return (
     <FlexBox>
-      <Box sx={{ textAlign: "center" }}>
+      <Box sx={{ textAlign: 'center' }}>
         <Typography
           variant="h4"
           fontWeight="bold"
-          sx={{ marginBottom: 3, color: "white" }}
+          sx={{ marginBottom: 3, color: 'white' }}
         >
           Planning Poker
         </Typography>

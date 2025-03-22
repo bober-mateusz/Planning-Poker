@@ -1,8 +1,8 @@
-import * as React from "react";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { Card, CardContent } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import * as React from 'react';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { Card, CardContent } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -12,18 +12,18 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const PointsSection = styled(CardContent)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
   minHeight: 200,
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText, // Ensures readable text
 }));
 
 const UsernameSection = styled(CardContent)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   minHeight: 80,
   backgroundColor: theme.palette.background.paper,
 }));
