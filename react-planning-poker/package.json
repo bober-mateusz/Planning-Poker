@@ -15,10 +15,15 @@
     "@emotion/styled": "latest",
     "@mui/icons-material": "^6.4.8",
     "@mui/material": "latest",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^7.3.0",
-    "react-scripts": "latest"
+    "react-scripts": "latest",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "uuid": "^11.1.0"
   },
   "browserslist": {
     "production": [
