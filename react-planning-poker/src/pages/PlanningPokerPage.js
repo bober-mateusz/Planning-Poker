@@ -1,17 +1,29 @@
+
 import * as React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { io } from "socket.io-client";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import UserCard from "../components/Cards/UserCard";
 import EstimateCards from "../components/EstimateCards";
 import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
+import FlexBox from '../components/FlexBox/FlexBox';
+
 
 // Sample user data
 const userNames = ["Hello", "Hello2"];
 var roomId = 1
 
 export default function PlanningPokerPage() {
+  const [user] = React.useState(userNames[0])
+  const [isRevealed, setIsRevealed] = React.useState(false)
+  const [pointSelection, setPointSelection] = React.useState("?")
+  const handlePointSelection = React.useCallback((newPoint) => {
+    setPointSelection(newPoint)
+  })
+  const handleRevealPoints = React.useCallback(() => {
+    setIsRevealed(!isRevealed)
+  })
 
   const [users, setUsers] = useState(0);
   const [votes, setVotes] = useState({});
@@ -60,7 +72,21 @@ export default function PlanningPokerPage() {
       >
         Planning Poker
       </Typography>
-
+    <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          sx={{
+            padding: "10px 20px",
+            borderRadius: 3,
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+          onClick={handleRevealPoints}>
+            Reveal
+        </Button>
+     </Box>
         {/* User Cards */}
         <Box
           display="flex"
@@ -70,7 +96,8 @@ export default function PlanningPokerPage() {
           flexDirection="row"
         >
           {userNames.map((userName) => (
-            <UserCard key={userName} userName={userName} points="3" />
+            <UserCard key={userName} userName={userName} 
+            points={(isRevealed && userName === user) ? pointSelection : "?"} />
           ))}
         </Box>
 
@@ -82,7 +109,7 @@ export default function PlanningPokerPage() {
           width="100%"
           sx={{ marginTop: 3 }} // Adds margin to the top of the EstimateCards
         >
-          <EstimateCards />
+          <EstimateCards handleOnClick={handlePointSelection}/>
         </Box>
 
         {/* Placeholder Vote Button */}
