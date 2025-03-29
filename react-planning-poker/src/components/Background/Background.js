@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { Box } from '@mui/material';
 
 export default function Background({ children, sx = {}, ...props }) {
@@ -23,3 +24,9 @@ export default function Background({ children, sx = {}, ...props }) {
     </Box>
   );
 }
+
+// ✅ Add PropTypes validation
+Background.propTypes = {
+  children: PropTypes.node, // 'children' can be any valid React node
+  sx: PropTypes.object, // 'sx' is an object (used for styles)
+};

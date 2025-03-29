@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { TextField } from '@mui/material';
 
-export default function GenericTextField({
+function GenericTextField({
   label = 'Enter text here', // Default label
   placeholder = 'Type here',
   value,
@@ -22,3 +23,14 @@ export default function GenericTextField({
     />
   );
 }
+
+// ✅ Add PropTypes validation
+GenericTextField.propTypes = {
+  label: PropTypes.string, // Label must be a string
+  placeholder: PropTypes.string, // Placeholder must be a string
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Value can be string or number
+  onChange: PropTypes.func.isRequired, // onChange must be a function (required)
+  sx: PropTypes.object, // Custom styles object
+};
+
+export default GenericTextField;

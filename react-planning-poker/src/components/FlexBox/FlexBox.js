@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -6,10 +7,9 @@ import HomeIcon from '@mui/icons-material/Home';
 export default function FlexBox({ children, sx = {}, ...props }) {
   return (
     <>
-      {/*This should probably be moved to a header component*/}
+      {/* This should probably be moved to a header component */}
       <Link to="/" style={{ position: 'absolute', top: 10, left: 10 }}>
-        <HomeIcon fontSize="large" sx={{ color: 'secondary.main' }} />{' '}
-        {/* Using theme color */}
+        <HomeIcon fontSize="large" sx={{ color: 'secondary.main' }} />
       </Link>
       <Box
         display="flex"
@@ -18,7 +18,7 @@ export default function FlexBox({ children, sx = {}, ...props }) {
         gap={2}
         flexWrap="wrap"
         flexDirection="column"
-        sx={{ position: 'relative', ...sx }} // Set position to relative for the icon positioning
+        sx={{ position: 'relative', ...sx }}
         {...props}
       >
         {children}
@@ -26,3 +26,9 @@ export default function FlexBox({ children, sx = {}, ...props }) {
     </>
   );
 }
+
+// ✅ Add PropTypes validation
+FlexBox.propTypes = {
+  children: PropTypes.node, // 'children' can be any valid React node
+  sx: PropTypes.object, // 'sx' is an object (used for styles)
+};
