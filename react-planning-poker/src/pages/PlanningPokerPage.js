@@ -1,69 +1,42 @@
-<<<<<<< Updated upstream
-import * as React from 'react';
-import { Box, Typography } from '@mui/material';
-import UserCard from '../components/Cards/UserCard';
-import EstimateCards from '../components/EstimateCards';
-import FlexBox from '../components/FlexBox/FlexBox';
-
-// Sample user data
-const userNames = ['Hello', 'Hello2'];
-=======
 import * as React from "react";
-import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { io } from "socket.io-client";
 import { Box, Typography } from "@mui/material";
-import UserCard from "../components/PointCard";
+import UserCard from "../components/Cards/UserCard";
 import EstimateCards from "../components/EstimateCards";
+import { useEffect, useState } from "react";
+import useWebSocket from "react-use-websocket";
 
 // Sample user data
 const userNames = ["Hello", "Hello2"];
 var roomId = 1
->>>>>>> Stashed changes
 
 export default function PlanningPokerPage() {
 
-  const [users, setUsers] = useState([]);
-  const [vote, setVote] = useState(null);
-
+  const [users, setUsers] = useState(0);
+  const [votes, setVotes] = useState({});
   const userId = localStorage.getItem("userId") || uuidv4();
   localStorage.setItem("userId", userId);
-  const socket = io("http://localhost:4000");
+
+  const { sendMessage, lastJsonMessage } = useWebSocket("ws://localhost:8080/poker", {
+      onOpen: () => sendMessage(JSON.stringify({ action: "join-room", roomId, userId })),
+  });
 
   useEffect(() => {
-    socket.emit("join-room", roomId, userId);
+      if (lastJsonMessage) {
+          if (lastJsonMessage.action === "update-room") {
+              setUsers(lastJsonMessage.users);
+          } else if (lastJsonMessage.action === "vote-update") {
+              setVotes(lastJsonMessage.votes);
+          }
+      }
+  }, [lastJsonMessage]);
 
-    socket.on("update-room", (roomUsers) => {
-        setUsers(roomUsers);
-        console.log(roomUsers);
-    });
-
-    socket.on("vote-update", (vote) => {
-        console.log("New vote:", vote);
-    });
-
-    return () => {
-        socket.disconnect();
-    };
-}, [roomId]);
-
-const handleVote = (value) => {
-    setVote(value);
-    socket.emit("vote", roomId, { userId, vote: value });
-};
+  const handleVote = (vote) => {
+      sendMessage(JSON.stringify({ action: "vote", roomId, userId, vote }));
+  };
 
   return (
-<<<<<<< Updated upstream
-    <FlexBox>
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{ marginBottom: 3, color: 'white' }}
-        >
-          Planning Poker
-        </Typography>
-=======
     <Box
       display="flex"
       flexDirection="column"
@@ -87,7 +60,6 @@ const handleVote = (value) => {
       >
         Planning Poker
       </Typography>
->>>>>>> Stashed changes
 
         {/* User Cards */}
         <Box
@@ -112,7 +84,23 @@ const handleVote = (value) => {
         >
           <EstimateCards />
         </Box>
+
+        {/* Placeholder Vote Button */}
+        <Box sx={{ marginTop: 3 }}>
+          <button
+            onClick={() => handleVote(3)}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Vote 3
+          </button>
+        </Box>
       </Box>
-    </FlexBox>
   );
 }
