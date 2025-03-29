@@ -1,11 +1,18 @@
-import * as React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import UserCard from '../components/Cards/UserCard';
-import EstimateCards from '../components/EstimateCards';
+
+import * as React from "react";
+import { v4 as uuidv4 } from "uuid";
+import { io } from "socket.io-client";
+import { Box, Typography, Button } from "@mui/material";
+import UserCard from "../components/Cards/UserCard";
+import EstimateCards from "../components/EstimateCards";
+import { useEffect, useState } from "react";
+import useWebSocket from "react-use-websocket";
 import FlexBox from '../components/FlexBox/FlexBox';
 
+
 // Sample user data
-const userNames = ['Hello', 'Hello2'];
+const userNames = ["Hello", "Hello2"];
+var roomId = 1
 
 export default function PlanningPokerPage() {
   const [user] = React.useState(userNames[0])
@@ -17,17 +24,44 @@ export default function PlanningPokerPage() {
   const handleRevealPoints = React.useCallback(() => {
     setIsRevealed(!isRevealed)
   })
+
+  const [users, setUsers] = useState(0);
+  const [votes, setVotes] = useState({});
+  const userId = localStorage.getItem("userId") || uuidv4();
+  localStorage.setItem("userId", userId);
+
+  const { sendMessage, lastJsonMessage } = useWebSocket("ws://localhost:8080/poker", {
+      onOpen: () => sendMessage(JSON.stringify({ action: "join-room", roomId, userId })),
+  });
+
+  useEffect(() => {
+      if (lastJsonMessage) {
+          if (lastJsonMessage.action === "update-room") {
+              setUsers(lastJsonMessage.users);
+          } else if (lastJsonMessage.action === "vote-update") {
+              setVotes(lastJsonMessage.votes);
+          }
+      }
+  }, [lastJsonMessage]);
+
+  const handleVote = (vote) => {
+      sendMessage(JSON.stringify({ action: "vote", roomId, userId, vote }));
+  };
+
   return (
     <FlexBox>
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{ marginBottom: 3, color: 'white' }}
-        >
-          Planning Poker
-        </Typography>
-        <Box>
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        sx={{ marginBottom: 3, color: 'white' }}
+      >
+        Planning Poker
+      </Typography>
+      <Box>
+      <h2>Room: {roomId}</h2>
+      {/* Title */}
+    <Box>
         <Button
           variant="contained"
           color="primary"
@@ -41,7 +75,7 @@ export default function PlanningPokerPage() {
           onClick={handleRevealPoints}>
             Reveal
         </Button>
-        </Box>
+     </Box>
         {/* User Cards */}
         <Box
           display="flex"
@@ -66,7 +100,25 @@ export default function PlanningPokerPage() {
         >
           <EstimateCards handleOnClick={handlePointSelection}/>
         </Box>
-      </Box>
+
+        {/* Placeholder Vote Button */}
+        <Box sx={{ marginTop: 3 }}>
+          <button
+            onClick={() => handleVote(3)}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Vote 3
+          </button>
+        </Box>
+        </Box>
+        </Box>
     </FlexBox>
   );
 }
