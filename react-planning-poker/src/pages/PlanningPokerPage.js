@@ -49,29 +49,18 @@ export default function PlanningPokerPage() {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="space-between" // Distributes space between items
-      minHeight="100vh" // Ensures full viewport height
-      padding={3} // Optional padding for spacing
-      sx={{
-        background:
-          "linear-gradient(135deg, rgba(0, 0, 255, 0.7), rgba(0, 0, 128, 0.7))", // Blue gradient
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <h2>Room: {roomId}</h2>
-      {/* Title */}
+    <FlexBox>
+    <Box sx={{ textAlign: 'center' }}>
       <Typography
         variant="h4"
         fontWeight="bold"
-        sx={{ marginBottom: 3, color: "white" }}
+        sx={{ marginBottom: 3, color: 'white' }}
       >
         Planning Poker
       </Typography>
+      <Box>
+      <h2>Room: {roomId}</h2>
+      {/* Title */}
     <Box>
         <Button
           variant="contained"
@@ -128,6 +117,8 @@ export default function PlanningPokerPage() {
             Vote 3
           </button>
         </Box>
-      </Box>
+        </Box>
+        </Box>
+    </FlexBox>
   );
 }
