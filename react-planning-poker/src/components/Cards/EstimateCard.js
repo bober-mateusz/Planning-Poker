@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Card, ButtonBase } from '@mui/material';
 
@@ -28,3 +29,9 @@ export default function EstimateCard({ value, handleOnClick }) {
     </ButtonBase>
   );
 }
+
+// **PropTypes Validation**
+EstimateCard.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Allow string or number
+  handleOnClick: PropTypes.func.isRequired, // Ensure it's a function
+};
