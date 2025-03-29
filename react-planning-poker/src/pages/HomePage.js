@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Typography, Paper } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';

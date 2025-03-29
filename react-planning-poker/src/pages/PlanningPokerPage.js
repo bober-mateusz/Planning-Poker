@@ -1,124 +1,120 @@
-
-import * as React from "react";
-import { v4 as uuidv4 } from "uuid";
-import { io } from "socket.io-client";
-import { Box, Typography, Button } from "@mui/material";
-import UserCard from "../components/Cards/UserCard";
-import EstimateCards from "../components/EstimateCards";
-import { useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import * as React from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { Box, Typography } from '@mui/material';
+import UserCard from '../components/Cards/UserCard';
+import EstimateCards from '../components/EstimateCards';
+import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 import FlexBox from '../components/FlexBox/FlexBox';
-
+import GenericButton from '../components/Input/GenericButton';
 
 // Sample user data
-const userNames = ["Hello", "Hello2"];
-var roomId = 1
+const userNames = ['Hello', 'Hello2'];
+var roomId = 1;
 
 export default function PlanningPokerPage() {
-  const [user] = React.useState(userNames[0])
-  const [isRevealed, setIsRevealed] = React.useState(false)
-  const [pointSelection, setPointSelection] = React.useState("?")
+  const [user] = React.useState(userNames[0]);
+  const [isRevealed, setIsRevealed] = React.useState(false);
+  const [pointSelection, setPointSelection] = React.useState('?');
   const handlePointSelection = React.useCallback((newPoint) => {
-    setPointSelection(newPoint)
-  })
+    setPointSelection(newPoint);
+  });
   const handleRevealPoints = React.useCallback(() => {
-    setIsRevealed(!isRevealed)
-  })
-
-  const [users, setUsers] = useState(0);
-  const [votes, setVotes] = useState({});
-  const userId = localStorage.getItem("userId") || uuidv4();
-  localStorage.setItem("userId", userId);
-
-  const { sendMessage, lastJsonMessage } = useWebSocket("ws://localhost:8080/poker", {
-      onOpen: () => sendMessage(JSON.stringify({ action: "join-room", roomId, userId })),
+    if (isRevealed == false) setIsRevealed(!isRevealed);
+  });
+  const handleHidePoints = React.useCallback(() => {
+    if (isRevealed == true) {
+      setIsRevealed(!isRevealed);
+    }
   });
 
+  const [, setUsers] = useState(0);
+  const [, setVotes] = useState({});
+  const userId = localStorage.getItem('userId') || uuidv4();
+  localStorage.setItem('userId', userId);
+
+  // The API calls ultimately should be refactored into its own file
+  const { sendMessage, lastJsonMessage } = useWebSocket(
+    'ws://localhost:8080/poker',
+    {
+      onOpen: () =>
+        sendMessage(JSON.stringify({ action: 'join-room', roomId, userId })),
+    }
+  );
+
   useEffect(() => {
-      if (lastJsonMessage) {
-          if (lastJsonMessage.action === "update-room") {
-              setUsers(lastJsonMessage.users);
-          } else if (lastJsonMessage.action === "vote-update") {
-              setVotes(lastJsonMessage.votes);
-          }
+    if (lastJsonMessage) {
+      if (lastJsonMessage.action === 'update-room') {
+        setUsers(lastJsonMessage.users);
+      } else if (lastJsonMessage.action === 'vote-update') {
+        setVotes(lastJsonMessage.votes);
       }
+    }
   }, [lastJsonMessage]);
 
   const handleVote = (vote) => {
-      sendMessage(JSON.stringify({ action: "vote", roomId, userId, vote }));
+    sendMessage(JSON.stringify({ action: 'vote', roomId, userId, vote }));
   };
 
   return (
     <FlexBox>
-    <Box sx={{ textAlign: 'center' }}>
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        sx={{ marginBottom: 3, color: 'white' }}
-      >
-        Planning Poker
-      </Typography>
       <Box>
-      <h2>Room: {roomId}</h2>
+        <Typography variant="h4" fontWeight="bold" sx={{ color: 'white' }}>
+          Planning Poker
+        </Typography>
+      </Box>
+      <Box>
+        <Typography variant="h4" fontWeight="bold">
+          Room: {roomId}
+        </Typography>
+      </Box>
       {/* Title */}
-    <Box>
-        <Button
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <GenericButton
           variant="contained"
-          color="primary"
           size="large"
-          sx={{
-            padding: "10px 20px",
-            borderRadius: 3,
-            fontSize: "16px",
-            fontWeight: "bold",
-          }}
-          onClick={handleRevealPoints}>
-            Reveal
-        </Button>
-     </Box>
-        {/* User Cards */}
-        <Box
-          display="flex"
-          justifyContent="center"
-          gap={2}
-          flexWrap="no-wrap"
-          flexDirection="row"
+          onClick={handleRevealPoints}
+          disabled={isRevealed} // Disable when points are already revealed
         >
-          {userNames.map((userName) => (
-            <UserCard key={userName} userName={userName} 
-            points={(isRevealed && userName === user) ? pointSelection : "?"} />
-          ))}
-        </Box>
+          Reveal
+        </GenericButton>
 
-        {/* Estimate Cards */}
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexDirection="row"
-          width="100%"
-          sx={{ marginTop: 3 }} // Adds margin to the top of the EstimateCards
+        <GenericButton
+          variant="contained"
+          size="large"
+          onClick={handleHidePoints}
+          disabled={!isRevealed} // Disable when points are already hidden
         >
-          <EstimateCards handleOnClick={handlePointSelection}/>
-        </Box>
-
-        {/* Placeholder Vote Button */}
-        <Box sx={{ marginTop: 3 }}>
-          <button
-            onClick={() => handleVote(3)}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#007BFF",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Vote 3
-          </button>
-        </Box>
-        </Box>
-        </Box>
+          Hide
+        </GenericButton>
+      </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        gap={2}
+        flexWrap="no-wrap"
+        flexDirection="row"
+      >
+        {userNames.map((userName) => (
+          <UserCard
+            key={userName}
+            userName={userName}
+            points={isRevealed && userName === user ? pointSelection : '?'}
+          />
+        ))}
+      </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        flexDirection="row"
+        width="100%"
+        sx={{ marginTop: 3 }} // Adds margin to the top of the EstimateCards
+      >
+        <EstimateCards handleOnClick={handlePointSelection} />
+      </Box>
+      <Box>
+        <GenericButton onClick={() => handleVote(3)}>Vote 3</GenericButton>
+      </Box>
     </FlexBox>
   );
 }

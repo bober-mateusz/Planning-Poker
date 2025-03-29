@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Card, CardContent } from '@mui/material';
@@ -7,8 +8,8 @@ import { styled } from '@mui/material/styles';
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
   minWidth: 220,
-  borderRadius: theme.shape.borderRadius * 3, // Uses MUI theme
-  boxShadow: theme.shadows[12], // Adds a shadow from MUI theme
+  borderRadius: theme.shape.borderRadius * 3,
+  boxShadow: theme.shadows[12],
 }));
 
 const PointsSection = styled(CardContent)(({ theme }) => ({
@@ -17,7 +18,7 @@ const PointsSection = styled(CardContent)(({ theme }) => ({
   justifyContent: 'center',
   minHeight: 200,
   backgroundColor: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText, // Ensures readable text
+  color: theme.palette.primary.contrastText,
 }));
 
 const UsernameSection = styled(CardContent)(({ theme }) => ({
@@ -31,7 +32,12 @@ const UsernameSection = styled(CardContent)(({ theme }) => ({
 // Component
 function UserCard({ userName, points }) {
   return (
-    <Box display="flex" justifyContent="center" alignItems="center">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      textAlign={'center'}
+    >
       <StyledCard>
         <PointsSection>
           <Typography variant="h4" fontWeight="bold">
@@ -48,5 +54,11 @@ function UserCard({ userName, points }) {
     </Box>
   );
 }
+
+// PropTypes validation
+UserCard.propTypes = {
+  userName: PropTypes.string.isRequired, // userName must be a string and required
+  points: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // points can be a string or number and required
+};
 
 export default UserCard;
