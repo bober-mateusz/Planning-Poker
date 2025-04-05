@@ -1,4 +1,4 @@
-package com.planningpoker.backend;
+package com.planning.poker.backend;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.CrossOrigin;

@@ -1,4 +1,4 @@
-package com.planningpoker.backend;
+package com.planning.poker.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.TextMessage;
