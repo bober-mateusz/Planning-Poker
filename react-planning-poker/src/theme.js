@@ -13,8 +13,10 @@ const theme = createTheme({
       contrastText: '#1976d2', // Use blue for text on white background
     },
     background: {
-      default: '#f5f5f5', // Light grey background
+      default: '#f3f3f3', // Light grey background
       paper: '#ffffff', // White background for Paper components
+      unselected: '#e0e0e0', // Light grey for unselected items
+      transparent: 'transparent',
     },
     text: {
       primary: '#333', // Dark text for contrast

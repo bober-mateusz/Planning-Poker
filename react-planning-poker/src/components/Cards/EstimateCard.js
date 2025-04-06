@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Card, ButtonBase } from '@mui/material';
 
-export default function EstimateCard({ value, handleOnClick }) {
+export default function EstimateCard({ value, handleOnClick, selected }) {
   return (
     <ButtonBase key={value} sx={{ borderRadius: 2 }}>
       <Card
@@ -20,7 +20,14 @@ export default function EstimateCard({ value, handleOnClick }) {
           '&:hover': { bgcolor: 'primary.light' }, // Accessing theme color
           borderRadius: (theme) => theme.shape.borderRadius * 1, // Accessing theme shape value
           boxShadow: (theme) => theme.shadows[7], // Accessing theme shadow
-          backgroundColor: (theme) => theme.palette.primary.contrastText, // Accessing theme color
+          backgroundColor: (theme) =>
+            selected
+              ? theme.palette.primary.main
+              : theme.palette.background.unselected, // Accessing theme color
+          color: (theme) =>
+            selected
+              ? theme.palette.primary.contrastText
+              : theme.palette.text.primary,
           padding: (theme) => theme.spacing(2), // Accessing theme spacing
         }}
       >
@@ -34,4 +41,5 @@ export default function EstimateCard({ value, handleOnClick }) {
 EstimateCard.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Allow string or number
   handleOnClick: PropTypes.func.isRequired, // Ensure it's a function
+  selected: PropTypes.bool, // Optional boolean prop
 };
