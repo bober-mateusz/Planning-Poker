@@ -101,9 +101,9 @@ export default function PlanningPokerPage() {
     }
   }, [lastJsonMessage]);
 
-  const handleVote = (vote) => {
-    sendMessage(JSON.stringify({ action: 'vote', roomId, userId, vote }));
-  };
+  // const handleVote = (vote) => {
+  //   sendMessage(JSON.stringify({ action: 'vote', roomId, userId, vote }));
+  // };
 
   return (
     <FlexBox>
@@ -188,9 +188,6 @@ export default function PlanningPokerPage() {
           handleOnClick={handlePointSelection}
           selectedValue={pointSelection}
         />
-      </Box>
-      <Box>
-        <GenericButton onClick={() => handleVote(3)}>Vote 3</GenericButton>
       </Box>
     </FlexBox>
   );
