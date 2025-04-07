@@ -13,21 +13,21 @@ var roomId = 1;
 export default function PlanningPokerPage() {
   const getAllClients = () => {
     return [
-      '1',
+      'Me',
       '2',
       '3',
       '4',
       '5',
       '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      '13',
-      '14',
-      '15',
+      // '7',
+      // '8',
+      // '9',
+      // '10',
+      // '11',
+      // '12',
+      // '13',
+      // '14',
+      // '15',
     ];
   };
   const users = getAllClients();
@@ -65,8 +65,10 @@ export default function PlanningPokerPage() {
   const { topRow, bottomRow } = getUserRows();
   const [isRevealed, setIsRevealed] = React.useState(false);
   const [pointSelection, setPointSelection] = React.useState('');
+  const [hasVoted, setHasVoted] = React.useState(false);
   const handlePointSelection = React.useCallback((newPoint) => {
-    setPointSelection(newPoint);
+    setPointSelection(newPoint === pointSelection ? '' : newPoint);
+    setHasVoted(!hasVoted);
   });
   const handleRevealPoints = React.useCallback(() => {
     if (isRevealed == false) setIsRevealed(!isRevealed);
@@ -149,11 +151,7 @@ export default function PlanningPokerPage() {
             key={user}
             userName={user}
             points={isRevealed && user === currentUser ? pointSelection : ''}
-            hasVoted={
-              user === currentUser &&
-              pointSelection !== '' &&
-              pointSelection !== undefined
-            } // Check if the user has voted
+            hasVoted={user === currentUser && hasVoted} // Check if the user has voted
           />
         ))}
       </Box>
