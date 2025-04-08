@@ -5,6 +5,7 @@ import FlexBox from '../components/FlexBox/FlexBox';
 import GenericTextField from '../components/Input/GenericTextField';
 import { Paper } from '@mui/material';
 import GenericButton from '../components/Input/GenericButton';
+
 export default function CreateGamePage() {
   return (
     <FlexBox>
@@ -31,7 +32,7 @@ export default function CreateGamePage() {
         ></GenericTextField>
 
         <Link to="/planning-poker" style={{ textDecoration: 'none' }}>
-          <GenericButton sx={{ width: '100%' }}>Enter Game</GenericButton>
+          <GenericButton sx={{ width: '100%' }}>Create Game</GenericButton>
         </Link>
       </Paper>
     </FlexBox>

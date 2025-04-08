@@ -1,23 +1,38 @@
 package com.planning.poker.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
+import com.planning.poker.backend.entities.User;
+import com.planning.poker.backend.entities.Room;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PokerWebSocketHandler extends TextWebSocketHandler {
 
+    private static final Set<String> ALLOWED_ACTIONS = new HashSet<>();
+    //For validating websocket call
+    static {
+        // Initialize the allowed actions
+        ALLOWED_ACTIONS.add("create-room");
+        ALLOWED_ACTIONS.add("join-room");
+        ALLOWED_ACTIONS.add("vote");
+        // Add more actions here as needed
+    }
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, Set<WebSocketSession>> rooms = new ConcurrentHashMap<>();
     private final Map<String, Map<String, String>> votes = new ConcurrentHashMap<>();
+    private final List<User> globalUserList = new CopyOnWriteArrayList<>();
+    private final List<Room> globalRoomList = new CopyOnWriteArrayList<>()
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
+    public void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws IOException {
         Map<String, String> data = objectMapper.readValue(message.getPayload(), Map.class);
+
         String action = data.get("action");
 
         switch (action) {
