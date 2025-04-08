@@ -27,7 +27,7 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
     private final Map<String, Set<WebSocketSession>> rooms = new ConcurrentHashMap<>();
     private final Map<String, Map<String, String>> votes = new ConcurrentHashMap<>();
     private final List<User> globalUserList = new CopyOnWriteArrayList<>();
-    private final List<Room> globalRoomList = new CopyOnWriteArrayList<>()
+    private final List<Room> globalRoomList = new CopyOnWriteArrayList<>();
 
     @Override
     public void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws IOException {
