@@ -37,10 +37,11 @@ function UserCard({ userName, points, hasVoted }) {
   // const hasVoted = points !== '' && points !== undefined; // Check if the user has voted
   return (
     <Box
-    sx={{
-      transform: hasVoted ? 'translateY(-12px)' : 'none',
-      transition: 'transform 0.3s ease',
-    }}>
+      sx={{
+        transform: hasVoted ? 'translateY(-12px)' : 'none',
+        transition: 'transform 0.3s ease',
+      }}
+    >
       <Box
         display="flex"
         justifyContent="center"

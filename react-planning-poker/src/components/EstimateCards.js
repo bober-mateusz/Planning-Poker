@@ -23,7 +23,8 @@ function EstimateCards({ handleOnClick, selectedValue }) {
 // Define PropTypes for the component
 EstimateCards.propTypes = {
   handleOnClick: PropTypes.func.isRequired, // Ensure handleOnClick is a function and required
-  selectedValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired // Allow string or number
+  selectedValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired, // Allow string or number
 };
 
 export default EstimateCards;
