@@ -66,9 +66,10 @@ export default function PlanningPokerPage() {
   const [isRevealed, setIsRevealed] = React.useState(false);
   const [pointSelection, setPointSelection] = React.useState('');
   const [hasVoted, setHasVoted] = React.useState(false);
+
   const handlePointSelection = React.useCallback((newPoint) => {
     setPointSelection(newPoint === pointSelection ? '' : newPoint);
-    setHasVoted(!hasVoted);
+    setHasVoted(newPoint !== pointSelection);
   });
   const handleRevealPoints = React.useCallback(() => {
     if (isRevealed == false) setIsRevealed(!isRevealed);
