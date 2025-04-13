@@ -34,6 +34,7 @@ const UsernameSection = styled(CardContent)(({ theme }) => ({
 
 // Component
 function UserCard({ userName, points, hasVoted }) {
+  // const hasVoted = points !== '' && points !== undefined; // Check if the user has voted
   return (
     <Box
       sx={{
@@ -48,7 +49,7 @@ function UserCard({ userName, points, hasVoted }) {
         textAlign={'center'}
       >
         <StyledCard>
-          <PointsSection data-hasvoted={hasVoted}>
+          <PointsSection hasVoted={hasVoted}>
             <Typography variant="h4" fontWeight="bold">
               {points}
             </Typography>

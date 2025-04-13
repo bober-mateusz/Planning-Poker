@@ -1,84 +1,91 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
-import { useState } from 'react';
 import UserCard from '../components/Cards/UserCard';
 import EstimateCards from '../components/EstimateCards';
+import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
 import { useUserContext } from '../components/Context/UserContext';
-import { useWebSocket } from '../components/Context/WebSocketContext'
-import { useEffect } from 'react';
 
 
 export default function PlanningPokerPage() {
-  const { userName, userID, roomID, roomName} = useUserContext();
-  const { socket } = useWebSocket();
-  const [users] = useState([]);
-  const [pointSelection] = useState('');
-  const [isRevealed, setIsRevealed] = useState(false);
-  
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleMessage = (event) => {
-      const message = JSON.parse(event.data);
-
-      if (message.action === 'ping') {
-        console.log('Ping response:', message);
-        // Optional: setUsers or update UI if needed
-      }
-    };
-
-    socket.addEventListener('message', handleMessage);
-
-    return () => {
-      socket.removeEventListener('message', handleMessage);
-    };
-  }, [socket]);
-
-  const sendPing = () => {
-    socket.send(JSON.stringify({
-      action: 'ping',
-      userName,
-      userID,
-      roomID,
-      roomName,
-    }));
-  };
+  // Local client list (simulate all users)
+  const { userName, roomID, roomName, userID } = useUserContext();
+  const getAllClients = () => [userName, '1', '2', '3', '4', '5'];
+  const users = getAllClients();
+  const [currentUser] = useState(userName);
 
 
-  const handleRevealPoints = () => setIsRevealed(true);
-  const handleHidePoints = () => setIsRevealed(false);
-
-  // Organize user rows
   const getUserRows = () => {
-    const others = users.filter((u) => u !== userName);
+    const currentUserIndex = users.indexOf(currentUser);
+    const otherUsers = [
+      ...users.slice(0, currentUserIndex),
+      ...users.slice(currentUserIndex + 1),
+    ];
+
     if (users.length <= 8) {
-      const insertIndex = Math.floor(others.length / 2);
+      const insertIndex = Math.floor(otherUsers.length / 2);
       return {
         topRow: [
-          ...others.slice(0, insertIndex),
-          userName,
-          ...others.slice(insertIndex),
+          ...otherUsers.slice(0, insertIndex),
+          currentUser,
+          ...otherUsers.slice(insertIndex),
         ],
         bottomRow: [],
       };
     } else {
-      const topRow = others.slice(0, 8);
-      const rest = others.slice(8);
+      const topRow = otherUsers.slice(0, 8);
+      const rest = otherUsers.slice(8);
       const insertIndex = Math.floor(rest.length / 2);
-      return {
-        topRow,
-        bottomRow: [
-          ...rest.slice(0, insertIndex),
-          userName,
-          ...rest.slice(insertIndex),
-        ],
-      };
+      const bottomRow = [
+        ...rest.slice(0, insertIndex),
+        currentUser,
+        ...rest.slice(insertIndex),
+      ];
+      return { topRow, bottomRow };
     }
   };
 
   const { topRow, bottomRow } = getUserRows();
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [pointSelection, setPointSelection] = useState('');
+  const [hasVoted, setHasVoted] = useState(false);
+
+  const handlePointSelection = (newPoint) => {
+    setPointSelection(newPoint === pointSelection ? '' : newPoint);
+    setHasVoted(newPoint !== pointSelection);
+  };
+
+  const handleRevealPoints = () => setIsRevealed(true);
+  const handleHidePoints = () => setIsRevealed(false);
+
+  // Ping logic only
+  const { sendMessage, lastJsonMessage } = useWebSocket(
+    'ws://localhost:8080/ws/poker',
+    {
+      shouldReconnect: () => false, // Only used for ping
+    }
+  );
+
+  useEffect(() => {
+    if (!lastJsonMessage) return;
+    if (lastJsonMessage.action === 'ping') {
+      console.log('Ping response:', lastJsonMessage);
+    }
+  }, [lastJsonMessage]);
+
+  const sendPing = () => {
+    sendMessage(
+      JSON.stringify({
+        action: 'ping',
+        userID,
+        userName,
+        roomID,
+        roomName
+      })
+    );
+  };
 
   return (
     <FlexBox>
@@ -89,19 +96,11 @@ export default function PlanningPokerPage() {
       </Box>
       <Box>
         <Typography variant="h4" fontWeight="bold">
-          Room: {roomName}  
-        </Typography>
-        <Typography variant="h4" fontWeight="bold">
-        RoomID: {roomID}
-        </Typography>
-        <Typography variant="h4" fontWeight="bold">
-        USERID {userID}
-        </Typography>
-        <Typography variant="h4" fontWeight="bold">
-        USERNAME {userName}
+          Room: {roomID}
         </Typography>
       </Box>
 
+      {/* Buttons */}
       <Box sx={{ display: 'flex', gap: 2 }}>
         <GenericButton
           variant="contained"
@@ -111,6 +110,7 @@ export default function PlanningPokerPage() {
         >
           Reveal
         </GenericButton>
+
         <GenericButton
           variant="contained"
           size="large"
@@ -119,11 +119,8 @@ export default function PlanningPokerPage() {
         >
           Hide
         </GenericButton>
-        <GenericButton
-          variant="contained"
-          size="large"
-          onClick={sendPing}
-        >
+
+        <GenericButton variant="contained" size="large" onClick={sendPing}>
           Ping
         </GenericButton>
       </Box>
@@ -141,8 +138,8 @@ export default function PlanningPokerPage() {
             <UserCard
               key={user}
               userName={user}
-              points={isRevealed && user === userName ? pointSelection : ''}
-              hasVoted={user === userName && !!pointSelection}
+              points={isRevealed && user === currentUser ? pointSelection : ''}
+              hasVoted={user === currentUser && hasVoted}
             />
           ))}
         </Box>
@@ -156,7 +153,7 @@ export default function PlanningPokerPage() {
         sx={{ marginTop: 3 }}
       >
         <EstimateCards
-          onClick={console.log("handle")}
+          handleOnClick={handlePointSelection}
           selectedValue={pointSelection}
         />
       </Box>

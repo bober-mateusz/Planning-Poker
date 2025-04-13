@@ -23,7 +23,8 @@ const createGame = async ({ roomName, userName, userID }) => {
 };
 
 export default function CreateGamePage() {
-  const { userName, setUserName, userID, setRoomID, roomName, setRoomName } = useUserContext();
+  const { userName, setUserName, userID, setRoomID, roomName, setRoomName } =
+    useUserContext();
   const { setSocket } = useWebSocket();
   const navigate = useNavigate();
 
@@ -35,12 +36,11 @@ export default function CreateGamePage() {
         console.error('Missing roomID or userID in response');
         return;
       }
-      console.log("Created roomID", roomID, userID);
+      console.log('Created roomID', roomID, userID);
 
       const socket = new WebSocket('ws://localhost:8080/ws/poker');
       setRoomID(roomID);
       setSocket(socket);
-      
 
       socket.onopen = () => {
         socket.send(

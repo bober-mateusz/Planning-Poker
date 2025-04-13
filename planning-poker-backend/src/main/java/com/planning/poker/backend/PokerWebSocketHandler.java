@@ -54,9 +54,6 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             room.getUserSessions().put(user, session); // Store the WebSocket session by userID
             System.out.println(userID + " joined room " + roomID);
             System.out.println(userID + " has Session " + session);
-
-            // Broadcast room update
-            sendRoomUpdate(roomID);
         } else {
             System.out.println("Invalid roomID or userID for joining.");
         }
@@ -80,24 +77,6 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
 
         // Process the vote (you can store it in a map or other data structure)
         broadcastToRoom(roomID, Map.of("action", "vote-update", "userID", userID, "vote", vote));
-    }
-
-    private void sendRoomUpdate(String roomID) throws IOException {
-        Room room = RoomController.getRoomById(roomID);
-        if (room != null) {
-            List<Map<String, String>> userList = new ArrayList<>();
-            for (Map.Entry<User, WebSocketSession> entry : room.getUserSessions().entrySet()) {
-                User user = entry.getKey();
-                userList.add(Map.of(
-                        "userID", user.userID.toString(),
-                        "userName", user.userName
-                ));
-            }
-            broadcastToRoom(roomID, Map.of(
-                    "action", "update-room",
-                    "users", userList
-            ));
-        }
     }
 
 
