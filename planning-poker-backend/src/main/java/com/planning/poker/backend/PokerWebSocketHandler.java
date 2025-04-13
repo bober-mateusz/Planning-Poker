@@ -69,6 +69,8 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         String userID = data.get("userID");
 
         Map<String,String> response = Map.of("action", "ping", "users", RoomController.getRoomById(roomID).toString());
+        System.out.println(response);
+        broadcastToRoom(roomID, response);
     }
 
     private void handleVote(WebSocketSession session, Map<String, String> data) throws IOException {
@@ -83,20 +85,36 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
     private void sendRoomUpdate(String roomID) throws IOException {
         Room room = RoomController.getRoomById(roomID);
         if (room != null) {
-            // Send the updated room info to all users in the room
-            broadcastToRoom(roomID, Map.of("action", "update-room", "users", room.getRoomSize()));
+            List<Map<String, String>> userList = new ArrayList<>();
+            for (Map.Entry<User, WebSocketSession> entry : room.getUserSessions().entrySet()) {
+                User user = entry.getKey();
+                userList.add(Map.of(
+                        "userID", user.userID.toString(),
+                        "userName", user.userName
+                ));
+            }
+            broadcastToRoom(roomID, Map.of(
+                    "action", "update-room",
+                    "users", userList
+            ));
         }
     }
+
 
     private void broadcastToRoom(String roomID, Map<String, ?> message) throws IOException {
         String jsonMessage = objectMapper.writeValueAsString(message);
         Room room = RoomController.getRoomById(roomID);
         if (room != null) {
-
+            for (WebSocketSession session : room.getUserSessions().values()) {
+                if (session != null && session.isOpen()) {
+                    session.sendMessage(new TextMessage(jsonMessage));
+                }
+            }
         } else {
             System.out.println("Room not found for broadcasting: " + roomID);
         }
     }
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {

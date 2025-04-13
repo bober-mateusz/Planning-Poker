@@ -9,6 +9,7 @@ import java.util.UUID;
 public class Room {
 
     private Map<User, WebSocketSession> userSessions;
+    private Map<User, Integer> UserVotes;
     private String roomName;
     private final UUID roomID;
 
@@ -18,6 +19,7 @@ public class Room {
         this.roomID = roomID;
         this.roomName = roomName;
     }
+
     public String getRoomID() {
         return this.roomID.toString();
     }
@@ -29,11 +31,6 @@ public class Room {
 
     public void addRoomName(String roomName){
         this.roomName = roomName;
-    }
-
-    // Remove a user from the room
-    public void removeUser(User user) {
-        userSessions.remove(user);
     }
 
     // Get the WebSocket session for a specific user

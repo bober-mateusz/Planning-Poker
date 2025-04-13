@@ -1,54 +1,51 @@
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import UserCard from '../components/Cards/UserCard';
 import EstimateCards from '../components/EstimateCards';
 import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
 import { useUserContext } from '../components/Context/UserContext';
-import { useWebSocket } from '../components/Context/WebSocketContext';
+import { useWebSocket } from '../components/Context/WebSocketContext'
+import { useEffect } from 'react';
+
 
 export default function PlanningPokerPage() {
   const { userName, userID, roomID, roomName} = useUserContext();
-  const { socket: userSocket } = useWebSocket();
-
-  const [users, setUsers] = useState([]);
-  const [pointSelection, setPointSelection] = useState('');
+  const { socket } = useWebSocket();
+  const [users] = useState([]);
+  const [pointSelection] = useState('');
   const [isRevealed, setIsRevealed] = useState(false);
-
-  // Fetch users on load
+  
   useEffect(() => {
-    if (!userSocket) return;
+    if (!socket) return;
 
     const handleMessage = (event) => {
       const message = JSON.parse(event.data);
-      if (message.action === 'update-room') {
-        setUsers(message.users || []);
+
+      if (message.action === 'ping') {
+        console.log('Ping response:', message);
+        // Optional: setUsers or update UI if needed
       }
     };
 
-    userSocket.addEventListener('message', handleMessage);
+    socket.addEventListener('message', handleMessage);
 
-    if (userSocket.readyState === WebSocket.OPEN) {
-      userSocket.send(JSON.stringify({ action: 'join-room', roomID, userID }));
-    } else {
-      const handleOpen = () => {
-        userSocket.send(JSON.stringify({ action: 'join-room', roomID, userID }));
-      };
-      userSocket.addEventListener('open', handleOpen);
-      return () => userSocket.removeEventListener('open', handleOpen);
-    }
+    return () => {
+      socket.removeEventListener('message', handleMessage);
+    };
+  }, [socket]);
 
-    return () => userSocket.removeEventListener('message', handleMessage);
-  }, [userSocket, roomID, userID]);
+  const sendPing = () => {
+    socket.send(JSON.stringify({
+      action: 'ping',
+      userName,
+      userID,
+      roomID,
+      roomName,
+    }));
+  };
 
-  // Local voting only
-  const handlePointSelection = useCallback(
-    (newPoint) => {
-      setPointSelection((prev) => (prev === newPoint ? '' : newPoint));
-    },
-    []
-  );
 
   const handleRevealPoints = () => setIsRevealed(true);
   const handleHidePoints = () => setIsRevealed(false);
@@ -122,6 +119,13 @@ export default function PlanningPokerPage() {
         >
           Hide
         </GenericButton>
+        <GenericButton
+          variant="contained"
+          size="large"
+          onClick={sendPing}
+        >
+          Ping
+        </GenericButton>
       </Box>
 
       {[topRow, bottomRow].map((row, i) => (
@@ -152,7 +156,7 @@ export default function PlanningPokerPage() {
         sx={{ marginTop: 3 }}
       >
         <EstimateCards
-          handleOnClick={handlePointSelection}
+          onClick={console.log("handle")}
           selectedValue={pointSelection}
         />
       </Box>
