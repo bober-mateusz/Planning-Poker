@@ -13,6 +13,7 @@
     "@emotion/styled": "latest",
     "@mui/icons-material": "^6.4.8",
     "@mui/material": "latest",
+    "@tanstack/react-query": "^5.72.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "react": "latest",

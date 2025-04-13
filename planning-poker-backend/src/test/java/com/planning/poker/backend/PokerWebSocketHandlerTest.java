@@ -28,7 +28,7 @@ class PokerWebSocketHandlerTest {
     void testJoinRoom() throws Exception {
         Map<String, String> message = Map.of(
                 "action", "join-room",
-                "roomId", "1"
+                "roomID", "1"
         );
 
         TextMessage textMessage = new TextMessage(objectMapper.writeValueAsString(message));
@@ -44,12 +44,12 @@ class PokerWebSocketHandlerTest {
     void testVote() throws Exception {
         // Join the room first
         handler.handleTextMessage(session, new TextMessage(objectMapper.writeValueAsString(
-                Map.of("action", "join-room", "roomId", "room1")
+                Map.of("action", "join-room", "roomID", "room1")
         )));
 
         // Send vote
         handler.handleTextMessage(session, new TextMessage(objectMapper.writeValueAsString(
-                Map.of("action", "vote", "roomId", "room1", "userId", "user123", "vote", "5")
+                Map.of("action", "vote", "roomID", "room1", "userID", "user123", "vote", "5")
         )));
 
         verify(session, atLeastOnce()).sendMessage(argThat(msg ->

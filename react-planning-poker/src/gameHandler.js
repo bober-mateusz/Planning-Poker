@@ -17,15 +17,15 @@ const io = new Server(server, {
 const rooms = {};
 
 io.on('connection', (socket) => {
-  socket.on('join-room', (roomId, userId) => {
-    if (!rooms[roomId]) rooms[roomId] = [];
-    rooms[roomId].push(userId);
-    socket.join(roomId);
-    io.to(roomId).emit('update-room', rooms[roomId]);
+  socket.on('join-room', (roomID, userID) => {
+    if (!rooms[roomID]) rooms[roomID] = [];
+    rooms[roomID].push(userID);
+    socket.join(roomID);
+    io.to(roomID).emit('update-room', rooms[roomID]);
   });
 
-  socket.on('vote', (roomId, userVote) => {
-    io.to(roomId).emit('vote-update', userVote);
+  socket.on('vote', (roomID, userVote) => {
+    io.to(roomID).emit('vote-update', userVote);
   });
 
   socket.on('disconnect', () => {
