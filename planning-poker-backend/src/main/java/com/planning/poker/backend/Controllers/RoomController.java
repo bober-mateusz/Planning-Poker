@@ -46,7 +46,6 @@ public class RoomController {
         // Create a new user and add them to the room
         User getUser = UserController.getUserById(request.getUserID());
         getUser.userName = request.getUserName();
-        getUser.roomID = roomID;
         room.addRoomName(request.getRoomName());
         room.addUser(getUser, null);  // WebSocket session can be added later
 
@@ -77,7 +76,7 @@ public class RoomController {
         if (room == null) throw new NoSuchElementException("Room not found");
 
         // Dummy placeholder for user retrieval
-        User user = new User(userUUID, roomUUID); // Replace with actual lookup
+        User user = new User(userUUID); // Replace with actual lookup
 
         // Add user to room with dummy WebSocketSession (you'll replace this part)
         room.addUser(user, null);

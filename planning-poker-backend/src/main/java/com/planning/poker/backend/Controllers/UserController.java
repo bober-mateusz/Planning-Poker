@@ -32,7 +32,6 @@ public class UserController {
         System.out.println("Created User: " + user.userID.toString());
         return Map.of(
                 "userID", user.userID.toString(),
-                "roomID", "",
                 "username", user.userName,
                 "users", users.toString()
         );
@@ -44,7 +43,6 @@ public class UserController {
         for (User user : users) {
             result.add(Map.of(
                     "userID", user.userID.toString(),
-                    "roomID", user.roomID.toString(),
                     "userName", user.userName
             ));
         }
@@ -59,7 +57,6 @@ public class UserController {
             if (user.userID.equals(userUUID)) {
                 return Map.of(
                         "userID", user.userID.toString(),
-                        "roomID", user.roomID.toString(),
                         "userName", user.userName
                 );
             }

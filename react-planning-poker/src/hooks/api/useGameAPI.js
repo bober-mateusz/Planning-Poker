@@ -22,8 +22,18 @@ export const useGameAPI = () => {
 
     return response.json();
   };
+
+  const getAllUsers = async () => {
+    const response = await fetch('http://localhost:8080/api/users');
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
+    return response.json();
+  };
+
   return {
     createUser,
     createRoom,
+    getAllUsers,
   };
 };
