@@ -6,14 +6,8 @@ import { useWebSocket } from '../../components/Context/WebSocketContext';
 import { useGameAPI } from '../api/useGameAPI';
 
 export const useGameMutations = () => {
-  const {
-    userName,
-    setUserName,
-    // userID,
-    setUserID,
-    setRoomID,
-    USER_STORAGE_KEY,
-  } = useUserContext();
+  const { userName, setUserName, setUserID, setRoomID, USER_STORAGE_KEY } =
+    useUserContext();
   const { setSocket } = useWebSocket();
   const navigate = useNavigate();
   const { createUser, createRoom } = useGameAPI();
