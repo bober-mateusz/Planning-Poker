@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import * as React from 'react';
 import { Box, Typography } from '@mui/material';
 import UserCard from '../components/Cards/UserCard';
@@ -8,14 +9,12 @@ import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
 import { useUserContext } from '../components/Context/UserContext';
 
-
 export default function PlanningPokerPage() {
   // Local client list (simulate all users)
   const { userName, roomID, roomName, userID } = useUserContext();
   const getAllClients = () => [userName, '1', '2', '3', '4', '5'];
   const users = getAllClients();
   const [currentUser] = useState(userName);
-
 
   const getUserRows = () => {
     const currentUserIndex = users.indexOf(currentUser);
@@ -82,7 +81,7 @@ export default function PlanningPokerPage() {
         userID,
         userName,
         roomID,
-        roomName
+        roomName,
       })
     );
   };
