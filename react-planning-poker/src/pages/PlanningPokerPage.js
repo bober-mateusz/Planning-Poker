@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Box, Typography } from '@mui/material';
 import UserCard from '../components/Cards/UserCard';
 import EstimateCards from '../components/EstimateCards';
@@ -7,31 +6,17 @@ import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
+import { useUserContext } from '../components/Context/UserContext';
 
-var roomId = 1;
 
 export default function PlanningPokerPage() {
-  const getAllClients = () => {
-    return [
-      'Me',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      // '7',
-      // '8',
-      // '9',
-      // '10',
-      // '11',
-      // '12',
-      // '13',
-      // '14',
-      // '15',
-    ];
-  };
+  // Local client list (simulate all users)
+  const { userName, roomID, roomName, userID } = useUserContext();
+  const getAllClients = () => [userName, '1', '2', '3', '4', '5'];
   const users = getAllClients();
-  const [currentUser] = React.useState(users[0]);
+  const [currentUser] = useState(userName);
+
+
   const getUserRows = () => {
     const currentUserIndex = users.indexOf(currentUser);
     const otherUsers = [
@@ -40,73 +25,67 @@ export default function PlanningPokerPage() {
     ];
 
     if (users.length <= 8) {
-      // All users fit in a single row
       const insertIndex = Math.floor(otherUsers.length / 2);
-      const singleRow = [
-        ...otherUsers.slice(0, insertIndex),
-        currentUser,
-        ...otherUsers.slice(insertIndex),
-      ];
-      return { topRow: singleRow, bottomRow: [] };
+      return {
+        topRow: [
+          ...otherUsers.slice(0, insertIndex),
+          currentUser,
+          ...otherUsers.slice(insertIndex),
+        ],
+        bottomRow: [],
+      };
     } else {
-      // Split into two rows: 8 top, rest bottom
       const topRow = otherUsers.slice(0, 8);
-      const bottomRest = otherUsers.slice(8);
-      const insertIndex = Math.floor(bottomRest.length / 2);
+      const rest = otherUsers.slice(8);
+      const insertIndex = Math.floor(rest.length / 2);
       const bottomRow = [
-        ...bottomRest.slice(0, insertIndex),
+        ...rest.slice(0, insertIndex),
         currentUser,
-        ...bottomRest.slice(insertIndex),
+        ...rest.slice(insertIndex),
       ];
       return { topRow, bottomRow };
     }
   };
 
   const { topRow, bottomRow } = getUserRows();
-  const [isRevealed, setIsRevealed] = React.useState(false);
-  const [pointSelection, setPointSelection] = React.useState('');
-  const [hasVoted, setHasVoted] = React.useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [pointSelection, setPointSelection] = useState('');
+  const [hasVoted, setHasVoted] = useState(false);
 
-  const handlePointSelection = React.useCallback((newPoint) => {
+  const handlePointSelection = (newPoint) => {
     setPointSelection(newPoint === pointSelection ? '' : newPoint);
     setHasVoted(newPoint !== pointSelection);
-  });
-  const handleRevealPoints = React.useCallback(() => {
-    if (isRevealed == false) setIsRevealed(!isRevealed);
-  });
-  const handleHidePoints = React.useCallback(() => {
-    if (isRevealed == true) {
-      setIsRevealed(!isRevealed);
-    }
-  });
+  };
 
-  const [, setUsers] = useState(0);
-  const [, setVotes] = useState({});
-  const userId = localStorage.getItem('userId') || uuidv4();
-  // localStorage.setItem('userId', userId);
+  const handleRevealPoints = () => setIsRevealed(true);
+  const handleHidePoints = () => setIsRevealed(false);
 
-  // The API calls ultimately should be refactored into its own file
+  // Ping logic only
   const { sendMessage, lastJsonMessage } = useWebSocket(
-    'ws://localhost:8080/poker',
+    'ws://localhost:8080/ws/poker',
     {
-      onOpen: () =>
-        sendMessage(JSON.stringify({ action: 'join-room', roomId, userId })),
+      shouldReconnect: () => false, // Only used for ping
     }
   );
 
   useEffect(() => {
-    if (lastJsonMessage) {
-      if (lastJsonMessage.action === 'update-room') {
-        setUsers(lastJsonMessage.users);
-      } else if (lastJsonMessage.action === 'vote-update') {
-        setVotes(lastJsonMessage.votes);
-      }
+    if (!lastJsonMessage) return;
+    if (lastJsonMessage.action === 'ping') {
+      console.log('Ping response:', lastJsonMessage);
     }
   }, [lastJsonMessage]);
 
-  // const handleVote = (vote) => {
-  //   sendMessage(JSON.stringify({ action: 'vote', roomId, userId, vote }));
-  // };
+  const sendPing = () => {
+    sendMessage(
+      JSON.stringify({
+        action: 'ping',
+        userID,
+        userName,
+        roomID,
+        roomName
+      })
+    );
+  };
 
   return (
     <FlexBox>
@@ -117,16 +96,17 @@ export default function PlanningPokerPage() {
       </Box>
       <Box>
         <Typography variant="h4" fontWeight="bold">
-          Room: {roomId}
+          Room: {roomID}
         </Typography>
       </Box>
-      {/* Title */}
+
+      {/* Buttons */}
       <Box sx={{ display: 'flex', gap: 2 }}>
         <GenericButton
           variant="contained"
           size="large"
           onClick={handleRevealPoints}
-          disabled={isRevealed} // Disable when points are already revealed
+          disabled={isRevealed}
         >
           Reveal
         </GenericButton>
@@ -135,53 +115,42 @@ export default function PlanningPokerPage() {
           variant="contained"
           size="large"
           onClick={handleHidePoints}
-          disabled={!isRevealed} // Disable when points are already hidden
+          disabled={!isRevealed}
         >
           Hide
         </GenericButton>
+
+        <GenericButton variant="contained" size="large" onClick={sendPing}>
+          Ping
+        </GenericButton>
       </Box>
-      <Box
-        display="flex"
-        justifyContent="center"
-        gap={2}
-        flexWrap="no-wrap"
-        flexDirection="row"
-      >
-        {topRow.map((user) => (
-          <UserCard
-            key={user}
-            userName={user}
-            points={isRevealed && user === currentUser ? pointSelection : ''}
-            hasVoted={user === currentUser && hasVoted} // Check if the user has voted
-          />
-        ))}
-      </Box>
-      <Box
-        display="flex"
-        justifyContent="center"
-        gap={2}
-        flexWrap="no-wrap"
-        flexDirection="row"
-      >
-        {bottomRow.map((user) => (
-          <UserCard
-            key={user}
-            userName={user}
-            points={isRevealed && user === currentUser ? pointSelection : ''}
-            hasVoted={
-              user === currentUser &&
-              pointSelection !== '' &&
-              pointSelection !== undefined
-            }
-          />
-        ))}
-      </Box>
+
+      {[topRow, bottomRow].map((row, i) => (
+        <Box
+          key={i}
+          display="flex"
+          justifyContent="center"
+          gap={2}
+          flexWrap="no-wrap"
+          flexDirection="row"
+        >
+          {row.map((user) => (
+            <UserCard
+              key={user}
+              userName={user}
+              points={isRevealed && user === currentUser ? pointSelection : ''}
+              hasVoted={user === currentUser && hasVoted}
+            />
+          ))}
+        </Box>
+      ))}
+
       <Box
         display="flex"
         justifyContent="center"
         flexDirection="row"
         width="100%"
-        sx={{ marginTop: 3 }} // Adds margin to the top of the EstimateCards
+        sx={{ marginTop: 3 }}
       >
         <EstimateCards
           handleOnClick={handlePointSelection}

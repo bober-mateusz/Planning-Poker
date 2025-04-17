@@ -1,28 +1,80 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types'; // Import PropTypes
-import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 
-// Create a UserContext to manage the user ID
 const UserContext = createContext(null);
+const USER_STORAGE_KEY = 'pp_user';
+const EXPIRY_HOURS = 12;
 
 export const UserContextProvider = ({ children }) => {
-  // State to store the user ID
-  const [userId, setUserId] = useState(null);
+  const [userID, setUserID] = useState(null);
+  const [userName, setUserName] = useState(''); // userName state
+  const [userSocket, setUserSocket] = useState(null); // userSocket state
+  const [roomID, setRoomID] = useState(''); // roomID state
+  const [roomName, setRoomName] = useState(''); // roomName state
 
-  // Generate a user ID when the context is initialized
   useEffect(() => {
-    const generatedUserId = uuidv4(); // You can use any UUID library or custom logic here
-    setUserId(generatedUserId); // Set the user ID
-    console.log(generatedUserId);
-  }, []); // This runs once on component mount
+    const fetchUserID = async () => {
+      const stored = localStorage.getItem(USER_STORAGE_KEY);
 
-  // Provide the userId value to children components
+      let shouldFetchNewUser = true;
+
+      if (stored) {
+        try {
+          const { userID, timestamp } = JSON.parse(stored);
+          const isExpired =
+            Date.now() - timestamp > EXPIRY_HOURS * 60 * 60 * 1000;
+
+          if (userID && !isExpired) {
+            setUserID(userID); // Sets userID from localStorage
+            shouldFetchNewUser = false;
+            console.log('Loaded userID from localStorage:', userID);
+          }
+        } catch (err) {
+          console.warn('Corrupt localStorage entry, resetting userID');
+        }
+      }
+
+      if (shouldFetchNewUser) {
+        try {
+          const response = await fetch('http://localhost:8080/api/create-user');
+          const data = await response.json();
+
+          setUserID(data.userID); // Sets userID from API response
+          localStorage.setItem(
+            USER_STORAGE_KEY,
+            JSON.stringify({ userID: data.userID, timestamp: Date.now() })
+          );
+          console.log('Fetched new userID:', data.userID);
+        } catch (error) {
+          console.error('Error fetching user ID:', error);
+        }
+      }
+    };
+
+    fetchUserID();
+  }, []);
+
+  // Providing context values to children components
   return (
-    <UserContext.Provider value={{ userId }}>{children}</UserContext.Provider>
+    <UserContext.Provider
+      value={{
+        userID,
+        userName,
+        userSocket,
+        roomID,
+        roomName,
+        setUserName, // Setter for userName
+        setUserSocket, // Setter for userSocket
+        setRoomID, // Setter for roomID
+        setRoomName, // Setter for roomName
+      }}
+    >
+      {children}
+    </UserContext.Provider>
   );
 };
 
-// Custom hook to access the UserContext
+// Custom hook to access user context
 export const useUserContext = () => {
   const context = useContext(UserContext);
   if (!context) {
@@ -31,7 +83,6 @@ export const useUserContext = () => {
   return context;
 };
 
-// Define prop types for UserContextProvider
 UserContextProvider.propTypes = {
-  children: PropTypes.node.isRequired, // This validates that children is required and can be any valid React node
+  children: PropTypes.node.isRequired,
 };

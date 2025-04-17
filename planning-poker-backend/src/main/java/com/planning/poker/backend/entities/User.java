@@ -19,4 +19,9 @@ public class User {
         this.roomID = roomID;
         this.userName = userName; // Can be null if not provided
     }
+    public User(UUID userID, String userName) {
+        this.userID = userID;
+        this.roomID = null;
+        this.userName = userName; // Can be null if not provided
+    }
 }

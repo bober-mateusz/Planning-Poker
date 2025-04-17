@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'; // Import PropTypes
 import EstimateCard from './Cards/EstimateCard';
 import { Box } from '@mui/material';
 
-function EstimateCards({ handleOnClick, selectedValue }) {
+function EstimateCards({ handleOnClick,selectedValue }) {
   const estimates = ['0.5', '1', '2', '3', '5', '8'];
 
   return (
@@ -22,7 +22,7 @@ function EstimateCards({ handleOnClick, selectedValue }) {
 
 // Define PropTypes for the component
 EstimateCards.propTypes = {
-  handleOnClick: PropTypes.func.isRequired, // Ensure handleOnClick is a function and required
+  handleOnClick: PropTypes.func.isRequired,
   selectedValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     .isRequired, // Allow string or number
 };

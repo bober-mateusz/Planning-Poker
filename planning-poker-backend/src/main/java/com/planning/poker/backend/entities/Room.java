@@ -4,14 +4,24 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Room {
 
     private Map<User, WebSocketSession> userSessions;
+    private Map<User, Integer> UserVotes;
+    private String roomName;
+    private final UUID roomID;
 
     // Constructor to initialize the room with an empty map
-    public Room() {
+    public Room(UUID roomID, String roomName) {
         this.userSessions = new HashMap<>();
+        this.roomID = roomID;
+        this.roomName = roomName;
+    }
+
+    public String getRoomID() {
+        return this.roomID.toString();
     }
 
     // Add a user and their WebSocket session to the room
@@ -19,9 +29,8 @@ public class Room {
         userSessions.put(user, session);
     }
 
-    // Remove a user from the room
-    public void removeUser(User user) {
-        userSessions.remove(user);
+    public void addRoomName(String roomName){
+        this.roomName = roomName;
     }
 
     // Get the WebSocket session for a specific user
