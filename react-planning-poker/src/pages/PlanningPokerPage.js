@@ -11,10 +11,10 @@ import { useUserContext } from '../components/Context/UserContext';
 
 export default function PlanningPokerPage() {
   // Local client list (simulate all users)
-  const { userName, roomID, roomName, userID } = useUserContext();
-  const getAllClients = () => [userName, '1', '2', '3', '4', '5'];
+  const { username, roomID, roomName, userID } = useUserContext();
+  const getAllClients = () => [username, '1', '2', '3', '4', '5'];
   const users = getAllClients();
-  const [currentUser] = useState(userName);
+  const [currentUser] = useState(username);
 
   const getUserRows = () => {
     const currentUserIndex = users.indexOf(currentUser);
@@ -79,7 +79,7 @@ export default function PlanningPokerPage() {
       JSON.stringify({
         action: 'ping',
         userID,
-        userName,
+        username,
         roomID,
         roomName,
       })
@@ -136,7 +136,7 @@ export default function PlanningPokerPage() {
           {row.map((user) => (
             <UserCard
               key={user}
-              userName={user}
+              username={user}
               points={isRevealed && user === currentUser ? pointSelection : ''}
               hasVoted={user === currentUser && hasVoted}
             />

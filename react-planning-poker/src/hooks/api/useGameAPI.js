@@ -8,14 +8,13 @@ export const useGameAPI = () => {
     return response.json();
   };
 
-  const createRoom = async ({ roomName, userName, userID }) => {
-    console.log('Creating room with:', { roomName, userName, userID });
+  const createRoom = async ({ roomName, username, userID }) => {
+    console.log('Creating room with:', { roomName, username, userID });
     const response = await fetch('http://localhost:8080/api/rooms/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ roomName, userName, userID }),
+      body: JSON.stringify({ username, userID, roomName }),
     });
-
     if (!response.ok) {
       throw new Error('Failed to create game');
     }

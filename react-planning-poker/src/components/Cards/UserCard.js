@@ -33,7 +33,7 @@ const UsernameSection = styled(CardContent)(({ theme }) => ({
 }));
 
 // Component
-function UserCard({ userName, points, hasVoted }) {
+function UserCard({ username, points, hasVoted }) {
   // const hasVoted = points !== '' && points !== undefined; // Check if the user has voted
   return (
     <Box
@@ -64,7 +64,7 @@ function UserCard({ userName, points, hasVoted }) {
       >
         <UsernameSection>
           <Typography variant="h6" fontWeight="500">
-            {userName}
+            {username}
           </Typography>
         </UsernameSection>
       </Box>
@@ -74,7 +74,7 @@ function UserCard({ userName, points, hasVoted }) {
 
 // PropTypes validation
 UserCard.propTypes = {
-  userName: PropTypes.string.isRequired, // userName must be a string and required
+  username: PropTypes.string.isRequired, // username must be a string and required
   points: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // points can be a string or number and required
   hasVoted: PropTypes.bool, // hasVoted must be a boolean
 };

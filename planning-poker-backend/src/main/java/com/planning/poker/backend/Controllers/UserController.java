@@ -1,6 +1,7 @@
 package com.planning.poker.backend.Controllers;
 
 import com.planning.poker.backend.entities.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,46 +22,37 @@ public class UserController {
                 .orElse(null);
     }
 
-
     @GetMapping("/api/create-user")
-    public Map<String, String> createUser() {
+    public User createUser() {
         UUID userID = UUID.randomUUID();
 
         User user = new User(userID, "User-" + userID.toString().substring(0, 5));
         users.add(user);
 
         System.out.println("Created User: " + user.userID.toString());
-        return Map.of(
-                "userID", user.userID.toString(),
-                "username", user.userName,
-                "users", users.toString()
-        );
+        return user;
     }
 
     @GetMapping("/api/users")
-    public List<Map<String, String>> getAllUsers() {
-        List<Map<String, String>> result = new ArrayList<>();
+    public List<User> getAllUsers() {
+        List<User> result = new ArrayList<>();
         for (User user : users) {
-            result.add(Map.of(
-                    "userID", user.userID.toString(),
-                    "userName", user.userName
+            result.add(new User(user.userID, user.username
             ));
         }
         return result;
     }
 
     @GetMapping("/api/user")
-    public Map<String, String> getUser(@RequestParam String userID) {
+    public ResponseEntity<?> getUser(@RequestParam String userID) {
         UUID userUUID = UUID.fromString(userID);
 
         for (User user : users) {
             if (user.userID.equals(userUUID)) {
-                return Map.of(
-                        "userID", user.userID.toString(),
-                        "userName", user.userName
-                );
+                return ResponseEntity.ok(new User(user.userID, user.username));
             }
         }
-        throw new NoSuchElementException("User not found");
+//        throw new NoSuchElementException("User not found");
+        return ResponseEntity.notFound().build();
     }
 }

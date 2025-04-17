@@ -6,7 +6,7 @@ import { useWebSocket } from '../../components/Context/WebSocketContext';
 import { useGameAPI } from '../api/useGameAPI';
 
 export const useGameMutations = () => {
-  const { userName, setUserName, setUserID, setRoomID, USER_STORAGE_KEY } =
+  const { username, setUserName, setUserID, setRoomID, USER_STORAGE_KEY } =
     useUserContext();
   const { setSocket } = useWebSocket();
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ export const useGameMutations = () => {
   const createRoomMutation = useMutation({
     mutationFn: createRoom,
     onSuccess: (data) => {
+      console.log(data);
       const { roomID, userID: returnedUserID } = data;
       if (!roomID || !returnedUserID) {
         console.error('Missing roomID or userID in response');
@@ -42,6 +43,7 @@ export const useGameMutations = () => {
       navigate('/planning-poker');
     },
     onError: (error) => {
+      console.log('Error creating room:', error);
       console.error('Error creating game:', error.message);
     },
   });
@@ -51,12 +53,13 @@ export const useGameMutations = () => {
     onSuccess: (data) => {
       const { userID } = data;
       if (!userID) {
+        console.log(data);
         console.error('Missing userID in response');
         return;
       }
       console.log('User created:', userID);
       setUserID(userID);
-      setUserName(userName);
+      setUserName(username);
       localStorage.setItem(
         USER_STORAGE_KEY,
         JSON.stringify({ userID: data.userID, timestamp: Date.now() })
@@ -72,7 +75,7 @@ export const useGameMutations = () => {
       const userData = await createUserMutation.mutateAsync();
       await createRoomMutation.mutateAsync({
         roomName,
-        userName,
+        username,
         userID: userData.userID,
       });
     } catch (error) {
