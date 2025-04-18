@@ -61,8 +61,8 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
 
     private void handlePing(WebSocketSession session, Map<String, String> data) throws IOException {
         String roomID = data.get("roomID");
-        String userName = data.get("userName");
-        String roomName = data.get("roomName");
+        String username = data.get("username");
+        String roomname = data.get("roomname");
         String userID = data.get("userID");
 
         Map<String,String> response = Map.of("action", "ping", "users", RoomController.getRoomById(roomID).toString());
