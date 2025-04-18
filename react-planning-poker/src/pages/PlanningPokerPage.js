@@ -11,7 +11,7 @@ import { useUserContext } from '../components/Context/UserContext';
 
 export default function PlanningPokerPage() {
   // Local client list (simulate all users)
-  const { username, roomID, roomName, userID } = useUserContext();
+  const { username, roomID, roomname, userID } = useUserContext();
   const getAllClients = () => [username, '1', '2', '3', '4', '5'];
   const users = getAllClients();
   const [currentUser] = useState(username);
@@ -81,7 +81,7 @@ export default function PlanningPokerPage() {
         userID,
         username,
         roomID,
-        roomName,
+        roomname,
       })
     );
   };

@@ -11,7 +11,7 @@ export const UserContextProvider = ({ children }) => {
   const [username, setUserName] = useState(''); // username state
   const [userSocket, setUserSocket] = useState(null); // userSocket state
   const [roomID, setRoomID] = useState(''); // roomID state
-  const [roomName, setRoomName] = useState(''); // roomName state
+  const [roomname, setRoomName] = useState(''); // roomname state
   const USER_STORAGE_KEY = 'pp_user';
 
   // Fetches the user ID from localStorage if it exists
@@ -48,13 +48,13 @@ export const UserContextProvider = ({ children }) => {
         username,
         userSocket,
         roomID,
-        roomName,
+        roomname,
         USER_STORAGE_KEY, //Including this in context for now, should be in a constants file
         setUserName, // Setter for username
         setUserID, // Setter for userID
         setUserSocket, // Setter for userSocket
         setRoomID, // Setter for roomID
-        setRoomName, // Setter for roomName
+        setRoomName, // Setter for roomname
       }}
     >
       {children}

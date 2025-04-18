@@ -7,7 +7,7 @@ import { useUserContext } from '../components/Context/UserContext';
 import { useGameMutations } from '../hooks/mutations/useGameMutation';
 
 export default function CreateGamePage() {
-  const { username, setUserName, roomName, setRoomName } = useUserContext();
+  const { username, setUserName, roomname, setRoomName } = useUserContext();
   const { handleCreateGame, isLoading, error } = useGameMutations();
 
   return (
@@ -31,7 +31,7 @@ export default function CreateGamePage() {
           placeholder="Game Room Name"
           variant="filled"
           required
-          value={roomName}
+          value={roomname}
           onChange={(e) => setRoomName(e.target.value)}
         />
 
@@ -45,7 +45,7 @@ export default function CreateGamePage() {
         />
 
         <GenericButton
-          onClick={() => handleCreateGame(roomName)}
+          onClick={() => handleCreateGame(roomname)}
           sx={{ width: '100%' }}
           disabled={isLoading}
         >

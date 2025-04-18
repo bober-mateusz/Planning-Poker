@@ -70,11 +70,11 @@ export const useGameMutations = () => {
     },
   });
 
-  const handleCreateGame = async (roomName) => {
+  const handleCreateGame = async (roomname) => {
     try {
       const userData = await createUserMutation.mutateAsync();
       await createRoomMutation.mutateAsync({
-        roomName,
+        roomname,
         username,
         userID: userData.userID,
       });

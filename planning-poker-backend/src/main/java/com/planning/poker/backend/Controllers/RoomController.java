@@ -33,7 +33,7 @@ public class RoomController {
         try {
             System.out.println(request.toString());
             // Validate inputs
-            if (request.getUsername() == null || request.getUserID() == null || request.getRoomName() == null) {
+            if (request.getUsername() == null || request.getUserID() == null || request.getRoomname() == null) {
                 return ResponseEntity.status(400).body(Map.of(
                         "status", "error",
                         "message", "Invalid Input"
@@ -42,14 +42,14 @@ public class RoomController {
 
             // Create a new room
             UUID roomID = UUID.randomUUID();
-            Room room = new Room(roomID, request.getRoomName());  // Create a new room
+            Room room = new Room(roomID, request.getRoomname());  // Create a new room
             System.out.println("New room created: " + roomID);
-            System.out.println(request.getUsername() + " " + request.getUserID() + " " + request.getRoomName());
+            System.out.println(request.getUsername() + " " + request.getUserID() + " " + request.getRoomname());
 
             // Create a new user and add them to the room
             User getUser = UserController.getUserById(request.getUserID());
             getUser.username = request.getUsername();
-            room.addRoomName(request.getRoomName());
+            room.addRoomName(request.getRoomname());
             room.addUser(getUser, null);  // WebSocket session can be added later
 
             // Add the room to the rooms list (assuming rooms is a static list of rooms)
@@ -59,7 +59,7 @@ public class RoomController {
 
             return ResponseEntity.ok(Map.of(
                     "roomID", roomID.toString(),
-                    "roomName", request.getRoomName(),
+                    "roomname", request.getRoomname(),
                     "message", "Room successfully created and user added",
                     "userID", request.getUserID(),
                     "status", "success"

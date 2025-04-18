@@ -10,5 +10,5 @@ import lombok.*;
 public class CreateRoomRequest {
     private String username;
     private String userID;
-    private String roomName;
+    private String roomname;
 }
