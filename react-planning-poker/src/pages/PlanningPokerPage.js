@@ -8,6 +8,8 @@ import useWebSocket from 'react-use-websocket';
 import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
 import { useUserContext } from '../components/Context/UserContext';
+import { createRoomInvite } from '../hooks/utils/createRoomInvite';
+import CreateRoomInviteSnackbar from '../components/Snackbars/CreateRoomInviteSnackbar';
 
 export default function PlanningPokerPage() {
   // Local client list (simulate all users)
@@ -15,6 +17,10 @@ export default function PlanningPokerPage() {
   const getAllClients = () => [username, '1', '2', '3', '4', '5'];
   const users = getAllClients();
   const [currentUser] = useState(username);
+  const [isCreateRoomInviteSnackbarOpen, setIsCreateRoomInviteSnackbarOpen] = useState(false);
+  const handleCreateRoomInviteSnackbarClose = () => {
+    setIsCreateRoomInviteSnackbarOpen(false);
+  };
 
   const getUserRows = () => {
     const currentUserIndex = users.indexOf(currentUser);
@@ -67,6 +73,10 @@ export default function PlanningPokerPage() {
     }
   );
 
+  const handleCreateRoomInvite = () => {
+    navigator.clipboard.writeText(createRoomInvite(roomID));
+    setIsCreateRoomInviteSnackbarOpen(true);
+  };
   useEffect(() => {
     if (!lastJsonMessage) return;
     if (lastJsonMessage.action === 'ping') {
@@ -122,6 +132,13 @@ export default function PlanningPokerPage() {
         <GenericButton variant="contained" size="large" onClick={sendPing}>
           Ping
         </GenericButton>
+        <GenericButton
+          variant="contained"
+          size="large"
+          onClick={handleCreateRoomInvite}
+        >
+          Invite
+        </GenericButton>
       </Box>
 
       {[topRow, bottomRow].map((row, i) => (
@@ -156,6 +173,10 @@ export default function PlanningPokerPage() {
           selectedValue={pointSelection}
         />
       </Box>
+      <CreateRoomInviteSnackbar
+        open={isCreateRoomInviteSnackbarOpen}
+        handleClose={handleCreateRoomInviteSnackbarClose}
+      />
     </FlexBox>
   );
 }

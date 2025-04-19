@@ -60,6 +60,32 @@ const theme = createTheme({
         },
       },
     },
+    MuiSnackbar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#35942e', // Green background for Snackbar
+          color: '#ffffff', // White text color
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          borderRadius: '8px',
+        },
+      },
+    },
+    MuiSnackbarContent: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#35942e', // Green background for Snackbar content
+          color: '#ffffff', // White text color
+          borderRadius: '8px',
+          width: 'auto', // Auto width
+          justifyContent: 'center', // Center content
+        },
+        message: {
+          margin: 0,
+          fontSize: '1rem', // Font size for Snackbar message
+          textAlign: 'center', // Center text
+        },
+      },
+    },
   },
 });
 
