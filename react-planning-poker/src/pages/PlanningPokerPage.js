@@ -4,23 +4,48 @@ import { Box, Typography } from '@mui/material';
 import UserCard from '../components/Cards/UserCard';
 import EstimateCards from '../components/EstimateCards';
 import { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
 import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
 import { useUserContext } from '../components/Context/UserContext';
 import { createRoomInvite } from '../hooks/utils/createRoomInvite';
 import CreateRoomInviteSnackbar from '../components/Snackbars/CreateRoomInviteSnackbar';
+import { useWebSocket } from '../components/Context/WebSocketContext';
 
 export default function PlanningPokerPage() {
-  // Local client list (simulate all users)
+
   const { username, roomID, roomname, userID } = useUserContext();
-  const getAllClients = () => [username, '1', '2', '3', '4', '5'];
-  const users = getAllClients();
+  const [users, setUsers] = useState([username]);
+  const { socket } = useWebSocket();
   const [currentUser] = useState(username);
-  const [isCreateRoomInviteSnackbarOpen, setIsCreateRoomInviteSnackbarOpen] = useState(false);
+  const [isCreateRoomInviteSnackbarOpen, setIsCreateRoomInviteSnackbarOpen] =
+    useState(false);
   const handleCreateRoomInviteSnackbarClose = () => {
     setIsCreateRoomInviteSnackbarOpen(false);
   };
+
+  useEffect(() => {
+    console.log('roomname:', roomname);
+    console.log('userid:', userID);
+    if (!socket) return;
+
+    const handleMessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      switch (data.action) {
+        case 'users-updated':
+          setUsers(data.users);
+          break;
+        default:
+          break;
+      }
+    };
+
+    socket.addEventListener('message', handleMessage);
+
+    return () => {
+      socket.removeEventListener('message', handleMessage);
+    };
+  }, [socket]);
 
   const getUserRows = () => {
     const currentUserIndex = users.indexOf(currentUser);
@@ -65,36 +90,36 @@ export default function PlanningPokerPage() {
   const handleRevealPoints = () => setIsRevealed(true);
   const handleHidePoints = () => setIsRevealed(false);
 
-  // Ping logic only
-  const { sendMessage, lastJsonMessage } = useWebSocket(
-    'ws://localhost:8080/ws/poker',
-    {
-      shouldReconnect: () => false, // Only used for ping
-    }
-  );
+  // // Ping logic only
+  // const { sendMessage, lastJsonMessage } = useWebSocket(
+  //   'ws://localhost:8080/ws/poker',
+  //   {
+  //     shouldReconnect: () => false, // Only used for ping
+  //   }
+  // );
 
   const handleCreateRoomInvite = () => {
     navigator.clipboard.writeText(createRoomInvite(roomID));
     setIsCreateRoomInviteSnackbarOpen(true);
   };
-  useEffect(() => {
-    if (!lastJsonMessage) return;
-    if (lastJsonMessage.action === 'ping') {
-      console.log('Ping response:', lastJsonMessage);
-    }
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (!lastJsonMessage) return;
+  //   if (lastJsonMessage.action === 'ping') {
+  //     console.log('Ping response:', lastJsonMessage);
+  //   }
+  // }, [lastJsonMessage]);
 
-  const sendPing = () => {
-    sendMessage(
-      JSON.stringify({
-        action: 'ping',
-        userID,
-        username,
-        roomID,
-        roomname,
-      })
-    );
-  };
+  // const sendPing = () => {
+  //   sendMessage(
+  //     JSON.stringify({
+  //       action: 'ping',
+  //       userID,
+  //       username,
+  //       roomID,
+  //       roomname,
+  //     })
+  //   );
+  // };
 
   return (
     <FlexBox>
@@ -129,7 +154,7 @@ export default function PlanningPokerPage() {
           Hide
         </GenericButton>
 
-        <GenericButton variant="contained" size="large" onClick={sendPing}>
+        <GenericButton variant="contained" size="large">
           Ping
         </GenericButton>
         <GenericButton

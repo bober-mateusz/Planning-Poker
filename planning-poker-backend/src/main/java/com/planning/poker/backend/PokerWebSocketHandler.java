@@ -12,13 +12,20 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PokerWebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final List<Room> rooms = RoomController.getRooms(); // Rooms list from RoomController
 
+    /**
+     * Handles incoming text messages from WebSocket clients.
+     * This method processes different actions such as joining a room, voting, and pinging.
+     *
+     * @param session The WebSocket session of the client
+     * @param message The incoming message from the client
+     * @throws IOException If there is an error processing the message
+     */
     @Override
     public void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws IOException {
         Map<String, String> data = objectMapper.readValue(message.getPayload(), Map.class);
@@ -38,6 +45,15 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * Handles the action of a user joining a room.
+     * This method retrieves the user and room information, adds the user to the room,
+     * and broadcasts the updated list of users in the room.
+     *
+     * @param session The WebSocket session of the user who is joining
+     * @param data    The data containing the user and room information
+     * @throws IOException If there is an error sending the WebSocket message
+     */
     private void handleJoinRoom(WebSocketSession session, Map<String, String> data) throws IOException {
         String userID = data.get("userID");
         String roomID = data.get("roomID");
@@ -54,11 +70,20 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             room.getUserSessions().put(user, session); // Store the WebSocket session by userID
             System.out.println(userID + " joined room " + roomID);
             System.out.println(userID + " has Session " + session);
+            broadcastUsersToRoom(roomID);
         } else {
             System.out.println("Invalid roomID or userID for joining.");
         }
     }
 
+    /**
+     * Handles the ping action from a user.
+     * This method is used to check the connection status and broadcast the current users in the room.
+     *
+     * @param session The WebSocket session of the user who sent the ping
+     * @param data    The data containing the room information
+     * @throws IOException If there is an error sending the WebSocket message
+     */
     private void handlePing(WebSocketSession session, Map<String, String> data) throws IOException {
         String roomID = data.get("roomID");
         String username = data.get("username");
@@ -70,6 +95,14 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         broadcastToRoom(roomID, response);
     }
 
+    /**
+     * Handles the voting action from a user.
+     * This method processes the vote and broadcasts the updated vote status to all users in the room.
+     *
+     * @param session The WebSocket session of the user who voted
+     * @param data    The data containing the vote information
+     * @throws IOException If there is an error sending the WebSocket message
+     */
     private void handleVote(WebSocketSession session, Map<String, String> data) throws IOException {
         String roomID = data.get("roomID");
         String userID = data.get("userID");
@@ -79,7 +112,14 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         broadcastToRoom(roomID, Map.of("action", "vote-update", "userID", userID, "vote", vote));
     }
 
-
+    /**
+     * Broadcasts a message to all users in a specific room.
+     * This method is used to send updates or notifications to all participants in the room.
+     *
+     * @param roomID The unique identifier of the room to broadcast to
+     * @param message The message to be sent, represented as a Map
+     * @throws IOException If there is an error sending the WebSocket message
+     */
     private void broadcastToRoom(String roomID, Map<String, ?> message) throws IOException {
         String jsonMessage = objectMapper.writeValueAsString(message);
         Room room = RoomController.getRoomById(roomID);
@@ -92,6 +132,41 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         } else {
             System.out.println("Room not found for broadcasting: " + roomID);
         }
+    }
+
+    /**
+     * Broadcasts an updated list of usernames to all connected clients in a specific room.
+     * This method is called when users join or leave the room to keep all clients synchronized
+     * with the current list of participants.
+     *
+     * @param roomID The unique identifier of the room to broadcast to
+     * @throws IOException If there is an error sending the WebSocket message
+     */
+    private void broadcastUsersToRoom(String roomID) throws IOException {
+
+        Room room = RoomController.getRoomById(roomID);
+
+        if(room == null){
+            System.out.println("Room not found for broadcasting: " + roomID);
+            return;
+        }
+
+        List<String> usernames = room.getUserSessions().keySet()
+                .stream().map(User::getUsername).toList();
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("action", "users-updated");
+        message.put("users", usernames);
+
+        String jsonMessage = objectMapper.writeValueAsString(message);
+        room.getUserSessions().values().forEach(session -> {
+            try {
+                session.sendMessage(new TextMessage(jsonMessage));
+            } catch (IOException e) {
+                System.out.println("Error sending socket message");
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 
