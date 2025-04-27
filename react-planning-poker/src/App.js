@@ -7,6 +7,7 @@ import Background from './components/Background/Background';
 import { UserContextProvider } from './components/Context/UserContext';
 import { WebSocketProvider } from './components/Context/WebSocketContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import JoinRoomPage from './pages/JoinRoomPage';
 const queryClient = new QueryClient();
 export default function App() {
   return (
@@ -23,6 +24,10 @@ export default function App() {
                   element={<PlanningPokerPage />}
                 />{' '}
                 <Route path="/create-game" element={<CreateGamePage />} />{' '}
+                <Route
+                  path="/invite/:roomID"
+                  element={<JoinRoomPage />}
+                />{' '}
               </Routes>
             </Router>
           </QueryClientProvider>

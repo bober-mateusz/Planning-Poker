@@ -73,26 +73,25 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/{roomID}/add-user")
+    @PostMapping("/add-user")
     public ResponseEntity<?> addUserToRoom(
-            @PathVariable String roomID,
+            @RequestParam String roomID,
             @RequestParam String userID
     ) {
         // Convert UUIDs
         UUID roomUUID = UUID.fromString(roomID);
-        UUID userUUID = UUID.fromString(userID);
 
         // Your logic to retrieve the Room and User
         Room room = RoomController.getRoomById(roomUUID.toString());
         if (room == null) throw new NoSuchElementException("Room not found");
 
         // Dummy placeholder for user retrieval
-        User user = new User(userUUID); // Replace with actual lookup
+        User user = UserController.getUserById(userID); // Replace with actual lookup
 
         // Add user to room with dummy WebSocketSession (you'll replace this part)
         room.addUser(user, null);
 
-        return ResponseEntity.ok(Map.of("status", "user added"));
+        return ResponseEntity.ok(Map.of("roomID", room.getRoomID(), "userID", user.userID.toString()));
     }
 
     // Get the number of users in a room

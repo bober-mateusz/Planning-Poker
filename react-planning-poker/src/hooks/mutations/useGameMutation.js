@@ -10,7 +10,7 @@ export const useGameMutations = () => {
     useUserContext();
   const { setSocket } = useWebSocket();
   const navigate = useNavigate();
-  const { createUser, createRoom } = useGameAPI();
+  const { createUser, createRoom, addUserToRoom } = useGameAPI();
 
   const createRoomMutation = useMutation({
     mutationFn: createRoom,
@@ -70,6 +70,39 @@ export const useGameMutations = () => {
     },
   });
 
+  const addUserToRoomMutation = useMutation({
+    mutationFn: addUserToRoom,
+    onSuccess: (data) => {
+      const { roomID, userID } = data;
+      if (!roomID || !userID) {
+        console.error('Missing roomID or userID in response');
+        return;
+      }
+
+      const socket = new WebSocket('ws://localhost:8080/ws/poker');
+      setRoomID(roomID);
+      setSocket(socket);
+
+      socket.onopen = () => {
+        socket.send(
+          JSON.stringify({
+            action: 'join-room',
+            roomID,
+            userID,
+          })
+        );
+      };
+
+      socket.onmessage = (event) => {
+        console.log('Message from server:', event.data);
+      };
+
+      navigate('/planning-poker');
+    },
+    onError: (error) => {
+      console.error('Error adding user to room:', error.message);
+    },
+  });
   const handleCreateGame = async (roomname) => {
     try {
       const userData = await createUserMutation.mutateAsync();
@@ -87,5 +120,8 @@ export const useGameMutations = () => {
     handleCreateGame,
     isLoading: createUserMutation.isPending || createRoomMutation.isPending,
     error: createUserMutation.error || createRoomMutation.error,
+    createRoomMutation,
+    createUserMutation,
+    addUserToRoomMutation,
   };
 };

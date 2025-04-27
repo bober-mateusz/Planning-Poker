@@ -23,13 +23,15 @@ public class UserController {
     }
 
     @GetMapping("/api/create-user")
-    public User createUser() {
+    public User createUser(@RequestParam(required = false) String username) {
         UUID userID = UUID.randomUUID();
 
-        User user = new User(userID, "User-" + userID.toString().substring(0, 5));
+        String checkedUsername = username != null ? username : "User-" + userID.toString().substring(0, 5);
+        System.out.println(checkedUsername);
+        User user = new User(userID, checkedUsername);
         users.add(user);
 
-        System.out.println("Created User: " + user.userID.toString());
+        System.out.println("Created User: " + user.toString());
         return user;
     }
 

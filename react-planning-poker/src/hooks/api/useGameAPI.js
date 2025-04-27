@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 export const useGameAPI = () => {
-  const createUser = async () => {
-    const response = await fetch('http://localhost:8080/api/create-user');
+
+  const createUser = async (username) => {
+    const response = await fetch(`http://localhost:8080/api/create-user?username=${username}`);
     if (!response.ok) {
       throw new Error('Failed to create user');
     }
@@ -22,6 +23,23 @@ export const useGameAPI = () => {
     return response.json();
   };
 
+  const addUserToRoom = async ({ roomID, userID }) => {
+    console.log('Adding user to room:', { roomID, userID });
+    const response = await fetch(
+      `http://localhost:8080/api/rooms/add-user?roomID=${roomID}&userID=${userID}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomID, userID }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to create game');
+    }
+
+    return response.json();
+  };
+
   const getAllUsers = async () => {
     const response = await fetch('http://localhost:8080/api/users');
     if (!response.ok) {
@@ -34,5 +52,6 @@ export const useGameAPI = () => {
     createUser,
     createRoom,
     getAllUsers,
+    addUserToRoom,
   };
 };
