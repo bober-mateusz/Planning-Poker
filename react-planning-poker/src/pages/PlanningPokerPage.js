@@ -12,7 +12,6 @@ import CreateRoomInviteSnackbar from '../components/Snackbars/CreateRoomInviteSn
 import { useWebSocket } from '../components/Context/WebSocketContext';
 
 export default function PlanningPokerPage() {
-
   const { username, roomID, roomname, userID } = useUserContext();
   const [users, setUsers] = useState([username]);
   const { socket } = useWebSocket();
@@ -90,36 +89,11 @@ export default function PlanningPokerPage() {
   const handleRevealPoints = () => setIsRevealed(true);
   const handleHidePoints = () => setIsRevealed(false);
 
-  // // Ping logic only
-  // const { sendMessage, lastJsonMessage } = useWebSocket(
-  //   'ws://localhost:8080/ws/poker',
-  //   {
-  //     shouldReconnect: () => false, // Only used for ping
-  //   }
-  // );
 
   const handleCreateRoomInvite = () => {
     navigator.clipboard.writeText(createRoomInvite(roomID));
     setIsCreateRoomInviteSnackbarOpen(true);
   };
-  // useEffect(() => {
-  //   if (!lastJsonMessage) return;
-  //   if (lastJsonMessage.action === 'ping') {
-  //     console.log('Ping response:', lastJsonMessage);
-  //   }
-  // }, [lastJsonMessage]);
-
-  // const sendPing = () => {
-  //   sendMessage(
-  //     JSON.stringify({
-  //       action: 'ping',
-  //       userID,
-  //       username,
-  //       roomID,
-  //       roomname,
-  //     })
-  //   );
-  // };
 
   return (
     <FlexBox>

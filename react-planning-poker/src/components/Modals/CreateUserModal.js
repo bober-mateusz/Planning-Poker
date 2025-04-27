@@ -4,7 +4,7 @@ import { Typography, Paper } from '@mui/material';
 import FlexBox from '../FlexBox/FlexBox';
 import GenericTextField from '../Input/GenericTextField';
 import GenericButton from '../Input/GenericButton';
-import { useUserContext } from '../Context/UserContext';
+import PropTypes from 'prop-types';
 
 export default function CreateUserModal({ onSubmit, isLoading }) {
   const [name, setName] = useState('');
@@ -47,4 +47,9 @@ export default function CreateUserModal({ onSubmit, isLoading }) {
       </Paper>
     </FlexBox>
   );
-}
+};
+
+CreateUserModal.propTypes = {
+  onSubmit: PropTypes.func.isRequired, // Function prop, required
+  isLoading: PropTypes.bool.isRequired, // Boolean prop, required
+};
