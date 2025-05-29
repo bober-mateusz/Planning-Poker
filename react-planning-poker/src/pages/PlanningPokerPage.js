@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import * as React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Switch, FormControlLabel } from '@mui/material';
 import UserCard from '../components/Cards/UserCard';
 import EstimateCards from '../components/EstimateCards';
 import { useEffect, useState } from 'react';
@@ -42,6 +42,9 @@ export default function PlanningPokerPage() {
           break;
         case 'vote-removed':
           setUserVotes(data.votes);
+          break;
+        case 'visibility-updated':
+          setIsRevealed(data.isRevealed);
           break;
         default:
           break;
@@ -112,9 +115,6 @@ export default function PlanningPokerPage() {
     console.log(userVotes);
   };
 
-  const handleRevealPoints = () => setIsRevealed(true);
-  const handleHidePoints = () => setIsRevealed(false);
-
   const handleCreateRoomInvite = () => {
     navigator.clipboard.writeText(createRoomInvite(roomID));
     setIsCreateRoomInviteSnackbarOpen(true);
@@ -129,33 +129,32 @@ export default function PlanningPokerPage() {
       </Box>
       <Box>
         <Typography variant="h4" fontWeight="bold">
-          Room: {roomID}
+          Room: {roomname}
         </Typography>
       </Box>
 
       {/* Buttons */}
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <GenericButton
-          variant="contained"
-          size="large"
-          onClick={handleRevealPoints}
-          disabled={isRevealed}
-        >
-          Reveal
-        </GenericButton>
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isRevealed}
+              onChange={() => {
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                  socket.send(
+                    JSON.stringify({
+                      action: isRevealed ? 'hide-votes' : 'reveal-votes',
+                      roomID: roomID,
+                    })
+                  );
+                }
+              }}
+              color="primary"
+            />
+          }
+          label={isRevealed ? 'Hide Votes' : 'Show Votes'}
+        />
 
-        <GenericButton
-          variant="contained"
-          size="large"
-          onClick={handleHidePoints}
-          disabled={!isRevealed}
-        >
-          Hide
-        </GenericButton>
-
-        <GenericButton variant="contained" size="large">
-          Ping
-        </GenericButton>
         <GenericButton
           variant="contained"
           size="large"
