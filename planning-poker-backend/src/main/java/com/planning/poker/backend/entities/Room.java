@@ -1,18 +1,21 @@
 package com.planning.poker.backend.entities;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 @Getter
+@Setter
 public class Room {
 
     private Map<User, WebSocketSession> userSessions;
     private Map<String, String> UserVotes;
     private String roomname;
     private final UUID roomID;
+    private boolean isRevealed = false;
 
     // Constructor to initialize the room with an empty map
     public Room(UUID roomID, String roomname) {

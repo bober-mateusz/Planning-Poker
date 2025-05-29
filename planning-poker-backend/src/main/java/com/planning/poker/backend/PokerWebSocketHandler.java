@@ -41,6 +41,9 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             case "vote-removed":
                 handleVote(session, data);
                 break;
+            case "reveal-votes":
+            case "hide-votes":
+                handleVoteVisibility(session, data);
             default:
                 System.out.println("Unknown action: " + action);
         }
@@ -132,6 +135,37 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("action", "vote-submitted");
         response.put("votes", room.getUserVotes());
+
+        broadcastToRoom(roomID, response);
+
+    }
+    /**
+     * Handles the visibility state of votes in a room.
+     * This method processes reveal/hide vote actions and broadcasts the updated visibility state to all users in the room.
+     *
+     * @param session The WebSocket session of the user who triggered the visibility change
+     * @param data    The data containing the room information and visibility action
+     * @throws IOException If there is an error sending the WebSocket message
+     */
+    private void handleVoteVisibility(WebSocketSession session, Map<String, String> data) throws IOException {
+        String roomID = data.get("roomID");
+        String action = data.get("action");
+
+        Room room = RoomController.getRoomById(roomID);
+        if (room == null) {
+            System.out.println("Invalid roomID for voting.");
+            return;
+        }
+
+        if ("reveal-votes".equals(action)) {
+            room.setRevealed(true);
+        } else if ("hide-votes".equals(action)) {
+            room.setRevealed(false);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("action", "visibility-updated");
+        response.put("isRevealed", room.isRevealed());
 
         broadcastToRoom(roomID, response);
 
