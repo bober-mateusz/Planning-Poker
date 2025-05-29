@@ -1,15 +1,16 @@
 package com.planning.poker.backend.entities;
 
+import lombok.Getter;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+@Getter
 public class Room {
 
     private Map<User, WebSocketSession> userSessions;
-    private Map<User, Integer> UserVotes;
+    private Map<String, String> UserVotes;
     private String roomname;
     private final UUID roomID;
 
@@ -18,6 +19,7 @@ public class Room {
         this.userSessions = new HashMap<>();
         this.roomID = roomID;
         this.roomname = roomname;
+        this.UserVotes = new HashMap<>();
     }
 
     public String getRoomID() {
@@ -46,5 +48,9 @@ public class Room {
     // Optionally, get the size of the room
     public int getRoomSize() {
         return userSessions.size();
+    }
+
+    public void submitVote(String userID, String vote) {
+        UserVotes.put(userID, vote);
     }
 }

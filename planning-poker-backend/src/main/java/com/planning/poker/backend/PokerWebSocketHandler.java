@@ -37,7 +37,8 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             case "join-room":
                 handleJoinRoom(session, data);
                 break;
-            case "vote":
+            case "vote-submitted":
+            case "vote-removed":
                 handleVote(session, data);
                 break;
             default:
@@ -106,10 +107,34 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
     private void handleVote(WebSocketSession session, Map<String, String> data) throws IOException {
         String roomID = data.get("roomID");
         String userID = data.get("userID");
-        String vote = data.get("vote");
+        String action = data.get("action");
 
-        // Process the vote (you can store it in a map or other data structure)
-        broadcastToRoom(roomID, Map.of("action", "vote-update", "userID", userID, "vote", vote));
+        Room room = RoomController.getRoomById(roomID);
+        if (room == null) {
+            System.out.println("Invalid roomID for voting.");
+            return;
+        }
+        boolean userInRoom = room.getUserSessions().keySet().stream()
+                .anyMatch(u -> u.getUserID().toString().equals(userID));
+
+        if (!userInRoom) {
+            System.out.println("User not found in room.");
+            return;
+        }
+
+        if ("vote-submitted".equals(action)) {
+            String vote = data.get("vote");
+            room.submitVote(userID, vote);
+        } else if ("vote-removed".equals(action)) {
+            room.getUserVotes().remove(userID);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("action", "vote-submitted");
+        response.put("votes", room.getUserVotes());
+
+        broadcastToRoom(roomID, response);
+
     }
 
     /**
@@ -151,12 +176,9 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        List<String> usernames = room.getUserSessions().keySet()
-                .stream().map(User::getUsername).toList();
-
         Map<String, Object> message = new HashMap<>();
         message.put("action", "users-updated");
-        message.put("users", usernames);
+        message.put("users", room.getUserSessions().keySet());
 
         String jsonMessage = objectMapper.writeValueAsString(message);
         room.getUserSessions().values().forEach(session -> {

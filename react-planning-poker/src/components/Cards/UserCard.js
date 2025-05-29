@@ -32,13 +32,11 @@ const UsernameSection = styled(CardContent)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
-// Component
-function UserCard({ username, points, hasVoted }) {
-  // const hasVoted = points !== '' && points !== undefined; // Check if the user has voted
+function UserCard({ username, points, hasVoted, isCurrentUser }) {
   return (
     <Box
       sx={{
-        transform: hasVoted ? 'translateY(-12px)' : 'none',
+        transform: isCurrentUser && hasVoted ? 'translateY(-12px)' : 'none',
         transition: 'transform 0.3s ease',
       }}
     >
@@ -77,6 +75,7 @@ UserCard.propTypes = {
   username: PropTypes.string.isRequired, // username must be a string and required
   points: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // points can be a string or number and required
   hasVoted: PropTypes.bool, // hasVoted must be a boolean
+  isCurrentUser: PropTypes.bool, // isCurrentUser must be a boolean
 };
 
 export default UserCard;

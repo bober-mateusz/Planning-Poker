@@ -13,9 +13,10 @@ import { useWebSocket } from '../components/Context/WebSocketContext';
 
 export default function PlanningPokerPage() {
   const { username, roomID, roomname, userID } = useUserContext();
-  const [users, setUsers] = useState([username]);
+  const [users, setUsers] = useState([]);
+  const [userVotes, setUserVotes] = useState({});
   const { socket } = useWebSocket();
-  const [currentUser] = useState(username);
+  const [currentUser] = useState({ userID: userID, username: username });
   const [isCreateRoomInviteSnackbarOpen, setIsCreateRoomInviteSnackbarOpen] =
     useState(false);
   const handleCreateRoomInviteSnackbarClose = () => {
@@ -25,6 +26,7 @@ export default function PlanningPokerPage() {
   useEffect(() => {
     console.log('roomname:', roomname);
     console.log('userid:', userID);
+    console.log('users: ', users);
     if (!socket) return;
 
     const handleMessage = (event) => {
@@ -33,6 +35,13 @@ export default function PlanningPokerPage() {
       switch (data.action) {
         case 'users-updated':
           setUsers(data.users);
+          break;
+        case 'vote-submitted':
+          setUserVotes(data.votes);
+          console.log('users', users);
+          break;
+        case 'vote-removed':
+          setUserVotes(data.votes);
           break;
         default:
           break;
@@ -47,18 +56,20 @@ export default function PlanningPokerPage() {
   }, [socket]);
 
   const getUserRows = () => {
-    const currentUserIndex = users.indexOf(currentUser);
-    const otherUsers = [
-      ...users.slice(0, currentUserIndex),
-      ...users.slice(currentUserIndex + 1),
-    ];
+    const currentUserFromArray = users.find((user) => {
+      return user.userID === currentUser.userID;
+    });
 
+    const userToInsert = currentUserFromArray || currentUser;
+    const otherUsers = users.filter(
+      (user) => user.userID !== currentUser.userID
+    );
     if (users.length <= 8) {
       const insertIndex = Math.floor(otherUsers.length / 2);
       return {
         topRow: [
           ...otherUsers.slice(0, insertIndex),
-          currentUser,
+          userToInsert,
           ...otherUsers.slice(insertIndex),
         ],
         bottomRow: [],
@@ -69,7 +80,7 @@ export default function PlanningPokerPage() {
       const insertIndex = Math.floor(rest.length / 2);
       const bottomRow = [
         ...rest.slice(0, insertIndex),
-        currentUser,
+        userToInsert,
         ...rest.slice(insertIndex),
       ];
       return { topRow, bottomRow };
@@ -78,17 +89,31 @@ export default function PlanningPokerPage() {
 
   const { topRow, bottomRow } = getUserRows();
   const [isRevealed, setIsRevealed] = useState(false);
-  const [pointSelection, setPointSelection] = useState('');
+  const [voteSubmission, setVoteSubmission] = useState('');
   const [hasVoted, setHasVoted] = useState(false);
 
-  const handlePointSelection = (newPoint) => {
-    setPointSelection(newPoint === pointSelection ? '' : newPoint);
-    setHasVoted(newPoint !== pointSelection);
+  const handleVoteSubmission = (newVote) => {
+    console.log(newVote);
+    const vote = newVote === voteSubmission ? '' : newVote;
+    setVoteSubmission(vote);
+    setHasVoted(vote !== '');
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      const action = vote ? 'vote-submitted' : 'vote-removed';
+      socket.send(
+        JSON.stringify({
+          action: action,
+          userID: userID,
+          roomID: roomID,
+          vote: vote,
+        })
+      );
+    }
+    console.log(userVotes);
   };
 
   const handleRevealPoints = () => setIsRevealed(true);
   const handleHidePoints = () => setIsRevealed(false);
-
 
   const handleCreateRoomInvite = () => {
     navigator.clipboard.writeText(createRoomInvite(roomID));
@@ -151,10 +176,21 @@ export default function PlanningPokerPage() {
         >
           {row.map((user) => (
             <UserCard
-              key={user}
-              username={user}
-              points={isRevealed && user === currentUser ? pointSelection : ''}
-              hasVoted={user === currentUser && hasVoted}
+              key={user.userID}
+              username={user.username}
+              points={
+                isRevealed
+                  ? user.userID === currentUser.userID
+                    ? voteSubmission
+                    : userVotes[user.userID] || ''
+                  : ''
+              }
+              hasVoted={
+                user.userID === currentUser.userID
+                  ? hasVoted
+                  : !!userVotes[user.userID]
+              }
+              isCurrentUser={user.userID === currentUser.userID}
             />
           ))}
         </Box>
@@ -168,8 +204,8 @@ export default function PlanningPokerPage() {
         sx={{ marginTop: 3 }}
       >
         <EstimateCards
-          handleOnClick={handlePointSelection}
-          selectedValue={pointSelection}
+          handleOnClick={handleVoteSubmission}
+          selectedValue={voteSubmission}
         />
       </Box>
       <CreateRoomInviteSnackbar
