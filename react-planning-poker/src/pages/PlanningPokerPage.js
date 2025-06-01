@@ -8,8 +8,8 @@ import FlexBox from '../components/FlexBox/FlexBox';
 import GenericButton from '../components/Input/GenericButton';
 import { useUserContext } from '../components/Context/UserContext';
 import { createRoomInvite } from '../hooks/utils/createRoomInvite';
-import CreateRoomInviteSnackbar from '../components/Snackbars/CreateRoomInviteSnackbar';
 import { useWebSocket } from '../components/Context/WebSocketContext';
+import GenericSnackbar from '../components/Snackbars/GenericSnackbar';
 
 export default function PlanningPokerPage() {
   const { username, roomID, roomname, userID } = useUserContext();
@@ -207,9 +207,14 @@ export default function PlanningPokerPage() {
           selectedValue={voteSubmission}
         />
       </Box>
-      <CreateRoomInviteSnackbar
+      <GenericSnackbar
         open={isCreateRoomInviteSnackbarOpen}
         handleClose={handleCreateRoomInviteSnackbarClose}
+        message={'Room invite copied to clipboard'}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
       />
     </FlexBox>
   );
