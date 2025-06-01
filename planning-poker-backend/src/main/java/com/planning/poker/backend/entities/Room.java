@@ -38,6 +38,8 @@ public class Room {
         this.roomname = roomname;
     }
 
+    public boolean getIsRevealed(){ return this.isRevealed; }
+
     // Get the WebSocket session for a specific user
     public WebSocketSession getSession(User user) {
         return userSessions.get(user);

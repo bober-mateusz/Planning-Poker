@@ -44,6 +44,7 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             case "reveal-votes":
             case "hide-votes":
                 handleVoteVisibility(session, data);
+                break;
             default:
                 System.out.println("Unknown action: " + action);
         }
@@ -165,7 +166,7 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
 
         Map<String, Object> response = new HashMap<>();
         response.put("action", "visibility-updated");
-        response.put("isRevealed", room.isRevealed());
+        response.put("isRevealed", room.getIsRevealed());
 
         broadcastToRoom(roomID, response);
 
