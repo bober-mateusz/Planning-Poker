@@ -56,4 +56,19 @@ public class Room {
     public void submitVote(String userID, String vote) {
         UserVotes.put(userID, vote);
     }
+
+    public Map<String, Object> getRoomState() {
+        Map<String, Object> state = new HashMap<>();
+        state.put("action", "room-state");
+        state.put("users", this.userSessions.keySet());
+        state.put("votes", this.UserVotes);
+        state.put("isRevealed", isRevealed);
+        return state;
+    }
+
+    public void updateUserSession(User user, WebSocketSession session) {
+        if (userSessions.containsKey(user)) {
+            userSessions.put(user, session);
+        }
+    }
 }

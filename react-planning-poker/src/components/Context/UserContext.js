@@ -13,32 +13,92 @@ export const UserContextProvider = ({ children }) => {
   const [roomID, setRoomID] = useState(''); // roomID state
   const [roomname, setRoomName] = useState(''); // roomname state
   const USER_STORAGE_KEY = 'pp_user';
-
-  // Fetches the user ID from localStorage if it exists
-  // This runs on startup of the app
-  const fetchUserID = async () => {
-    const stored = localStorage.getItem(USER_STORAGE_KEY);
-
-    if (stored) {
-      try {
-        const { userID, timestamp } = JSON.parse(stored);
-        const isExpired =
-          Date.now() - timestamp > EXPIRY_HOURS * 60 * 60 * 1000;
-
-        if (userID && !isExpired) {
-          setUserID(userID); // Sets userID from localStorage
-          // shouldFetchNewUser = false;
-          console.log('Loaded userID from localStorage:', userID);
-        }
-      } catch (err) {
-        console.warn('No userID found in localStorage:', err);
-      }
+  const getStorageKey = (key) => {
+    if (key === 'userID') {
+      return `${USER_STORAGE_KEY}_${key}`;
     }
+    return `${USER_STORAGE_KEY}_${userID}_${key}`;
   };
 
   useEffect(() => {
-    fetchUserID();
-  }, []);
+    if (!userID) {
+      const stored = localStorage.getItem(`${USER_STORAGE_KEY}_userID`);
+      if (stored) {
+        const { value, timestamp } = JSON.parse(stored);
+        const isExpired =
+          Date.now() - timestamp > EXPIRY_HOURS * 60 * 60 * 1000;
+        if (!isExpired) setUserID(value);
+      }
+    } else {
+      localStorage.setItem(
+        `${USER_STORAGE_KEY}_userID`,
+        JSON.stringify({
+          value: userID,
+          timestamp: Date.now(),
+        })
+      );
+    }
+  }, [userID]);
+
+  useEffect(() => {
+    if (!username && userID) {
+      const stored = localStorage.getItem(getStorageKey('username'));
+      if (stored) {
+        const { value, timestamp } = JSON.parse(stored);
+        const isExpired =
+          Date.now() - timestamp > EXPIRY_HOURS * 60 * 60 * 1000;
+        if (!isExpired) setUserName(value);
+      }
+    } else if (username && userID) {
+      localStorage.setItem(
+        getStorageKey('username'),
+        JSON.stringify({
+          value: username,
+          timestamp: Date.now(),
+        })
+      );
+    }
+  }, [username, userID]);
+
+  useEffect(() => {
+    if (!roomID && userID) {
+      const stored = localStorage.getItem(getStorageKey('roomID'));
+      if (stored) {
+        const { value, timestamp } = JSON.parse(stored);
+        const isExpired =
+          Date.now() - timestamp > EXPIRY_HOURS * 60 * 60 * 1000;
+        if (!isExpired) setRoomID(value);
+      }
+    } else if (roomID && userID) {
+      localStorage.setItem(
+        getStorageKey('roomID'),
+        JSON.stringify({
+          value: roomID,
+          timestamp: Date.now(),
+        })
+      );
+    }
+  }, [roomID, userID]);
+
+  useEffect(() => {
+    if (!roomname && userID) {
+      const stored = localStorage.getItem(getStorageKey('roomname'));
+      if (stored) {
+        const { value, timestamp } = JSON.parse(stored);
+        const isExpired =
+          Date.now() - timestamp > EXPIRY_HOURS * 60 * 60 * 1000;
+        if (!isExpired) setRoomName(value);
+      }
+    } else if (roomname && userID) {
+      localStorage.setItem(
+        getStorageKey('roomname'),
+        JSON.stringify({
+          value: roomname,
+          timestamp: Date.now(),
+        })
+      );
+    }
+  }, [roomname, userID]);
 
   // Providing context values to children components
   return (
