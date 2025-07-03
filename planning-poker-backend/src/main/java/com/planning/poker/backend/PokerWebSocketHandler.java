@@ -6,6 +6,7 @@ import com.planning.poker.backend.Controllers.UserController;
 import com.planning.poker.backend.entities.User;
 import com.planning.poker.backend.entities.Room;
 import org.springframework.lang.NonNull;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -44,6 +45,9 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
             case "reveal-votes":
             case "hide-votes":
                 handleVoteVisibility(session, data);
+            case "get-room-state":
+                handleGetRoomState(session, data);
+                break;
             default:
                 System.out.println("Unknown action: " + action);
         }
@@ -68,6 +72,12 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
         User user = UserController.getUserById(userID);
         System.out.println(room.getRoomID() + user.userID.toString());
 
+        if (user != null && room != null) {
+            if (room.getUserSessions().containsKey(user)) {
+                room.updateUserSession(user, session);
+                System.out.println("User " + userID + " already in room " + roomID + ", updating session.");
+            }
+        }
         // Add the user to the room
         if (room != null) {
             room.addUser(user, session);  // Adds user to room and associates WebSocket session
@@ -171,6 +181,22 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
 
     }
 
+    private void handleGetRoomState(WebSocketSession session, Map<String, String> data) throws IOException {
+        String roomID = data.get("roomID");
+        Room room = RoomController.getRoomById(roomID);
+
+        if (room != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("action", "room-state");
+            response.put("users", room.getUserSessions().keySet());
+            response.put("votes", room.getUserVotes());
+            response.put("isRevealed", room.isRevealed());
+
+            String jsonMessage = objectMapper.writeValueAsString(response);
+            session.sendMessage(new TextMessage(jsonMessage));
+        }
+    }
+
     /**
      * Broadcasts a message to all users in a specific room.
      * This method is used to send updates or notifications to all participants in the room.
@@ -230,5 +256,16 @@ public class PokerWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // This method is called when the WebSocket connection is established
         System.out.println("New WebSocket connection established: " + session.getId());
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        for (Room room : rooms) {
+            boolean removed = room.getUserSessions().values().removeIf(existingSession -> existingSession.equals(session));
+            if(removed) {
+                broadcastUsersToRoom(room.getRoomID());
+            }
+        }
+        System.out.println("WebSocket connection closed: " + session.getId());
     }
 }

@@ -13,28 +13,68 @@ import { useWebSocket } from '../components/Context/WebSocketContext';
 
 export default function PlanningPokerPage() {
   const { username, roomID, roomname, userID } = useUserContext();
+  const [isContextLoaded, setIsContextLoaded] = useState(false);
   const [users, setUsers] = useState([]);
   const [userVotes, setUserVotes] = useState({});
   const { socket } = useWebSocket();
-  const [currentUser] = useState({ userID: userID, username: username });
+
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [voteSubmission, setVoteSubmission] = useState('');
+  const [hasVoted, setHasVoted] = useState(false);
+  const [currentUser, setCurrentUser] = useState({
+    userID: userID,
+    username: username,
+  });
   const [isCreateRoomInviteSnackbarOpen, setIsCreateRoomInviteSnackbarOpen] =
     useState(false);
   const handleCreateRoomInviteSnackbarClose = () => {
     setIsCreateRoomInviteSnackbarOpen(false);
   };
-
   useEffect(() => {
-    console.log('roomname:', roomname);
-    console.log('userid:', userID);
-    console.log('users: ', users);
-    if (!socket) return;
+    if (userID && username) {
+      setCurrentUser({ userID, username });
+    }
+  }, [userID, username]);
+  useEffect(() => {
+    if (userID) {
+      setIsContextLoaded(true);
+    }
+  }, [userID]);
+  useEffect(() => {
+    if (!isContextLoaded || !socket || !userID || !username || !roomID) return;
+    console.log('blah');
+    const joinRoom = () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            action: 'join-room',
+            userID: userID,
+            username: username,
+            roomID: roomID,
+          })
+        );
+
+        setTimeout(() => {
+          socket.send(
+            JSON.stringify({
+              action: 'get-room-state',
+              roomID,
+            })
+          );
+        }, 100);
+      }
+    };
+
+    const handleOpen = () => {
+      joinRoom();
+    };
 
     const handleMessage = (event) => {
       const data = JSON.parse(event.data);
 
       switch (data.action) {
         case 'users-updated':
-          setUsers(data.users);
+          setUsers(data.users || []);
           break;
         case 'vote-submitted':
           setUserVotes(data.votes);
@@ -46,17 +86,31 @@ export default function PlanningPokerPage() {
         case 'visibility-updated':
           setIsRevealed(data.isRevealed);
           break;
+        case 'room-state':
+          setUsers(data.users || []);
+          setUserVotes(data.votes || {});
+          setIsRevealed(!!data.isRevealed);
+          setVoteSubmission(data.votes?.[userID] || '');
+          setHasVoted(!!data.votes?.[userID]);
+          break;
         default:
           break;
       }
     };
-
+    if (socket.readyState === WebSocket.CONNECTING) {
+      console.log('Socket is connecting, waiting for open event');
+      socket.addEventListener('open', joinRoom);
+    } else if (socket.readyState === WebSocket.OPEN) {
+      console.log('Socket is already open, joining room');
+      joinRoom();
+    }
     socket.addEventListener('message', handleMessage);
 
     return () => {
       socket.removeEventListener('message', handleMessage);
+      socket.removeEventListener('open', handleOpen);
     };
-  }, [socket]);
+  }, [socket, isContextLoaded, userID, username, roomID]);
 
   const getUserRows = () => {
     const currentUserFromArray = users.find((user) => {
@@ -89,12 +143,7 @@ export default function PlanningPokerPage() {
       return { topRow, bottomRow };
     }
   };
-
   const { topRow, bottomRow } = getUserRows();
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [voteSubmission, setVoteSubmission] = useState('');
-  const [hasVoted, setHasVoted] = useState(false);
-
   const handleVoteSubmission = (newVote) => {
     console.log(newVote);
     const vote = newVote === voteSubmission ? '' : newVote;
@@ -119,7 +168,22 @@ export default function PlanningPokerPage() {
     navigator.clipboard.writeText(createRoomInvite(roomID));
     setIsCreateRoomInviteSnackbarOpen(true);
   };
-
+  const handleVisibilityChange = () => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      const newIsRevealed = !isRevealed;
+      setIsRevealed(newIsRevealed);  // Update local state immediately
+      socket.send(
+        JSON.stringify({
+          action: newIsRevealed ? 'reveal-votes' : 'hide-votes',
+          roomID: roomID,
+          isRevealed: newIsRevealed
+        })
+      );
+    }
+  };
+  if (!isContextLoaded) {
+    return <Typography>Loading...</Typography>;
+  }
   return (
     <FlexBox>
       <Box>
@@ -139,16 +203,7 @@ export default function PlanningPokerPage() {
           control={
             <Switch
               checked={isRevealed}
-              onChange={() => {
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                  socket.send(
-                    JSON.stringify({
-                      action: isRevealed ? 'hide-votes' : 'reveal-votes',
-                      roomID: roomID,
-                    })
-                  );
-                }
-              }}
+              onChange={handleVisibilityChange}
               color="primary"
             />
           }
