@@ -1,42 +1,39 @@
-# Material UI - Create React App example
+# Planning Poker App
+A lightweight Planning Poker tool built with **React** (frontend) and **Spring Boot** (backend) using WebSockets for real-time communication.
 
-## How to use
+## Features
+- Create and join rooms
+- Live user updates
+- Submit, remove, reveal, and hide votes
+- Persistent user sessions
 
-Download the example [or clone the repo](https://github.com/mui/material-ui):
+## Tech Stack
+- **Frontend:** React, React Router, React Query  
+- **Backend:** Spring Boot (Java), WebSockets, Jackson  
 
-<!-- #default-branch-switch -->
+## Getting Started
+### Prerequisites
+- Java 17+  
+- Node.js 18+  
+- npm  
 
-```bash
-curl https://codeload.github.com/mui/material-ui/tar.gz/v6.x | tar -xz --strip=2 material-ui-6.x/examples/material-ui-cra
-cd material-ui-cra
-```
+### Run the backend
+cd Planning-poker-back-end  
+./gradlew bootRun  
 
-Install it and run:
+### Run the frontend
+cd react-planning-poker  
+npm install  
+npm start  
 
-```bash
-npm install
-npm start
-```
+- Backend runs on **http://localhost:8080**  
+- Frontend runs on **http://localhost:3000**  
 
-or:
+## Routes
+- `/` → Home  
+- `/create-game` → Create a new room  
+- `/invite/:roomID` → Join a room  
+- `/planning-poker` → Poker board  
 
-<!-- #default-branch-switch -->
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/github/mui/material-ui/tree/v6.x/examples/material-ui-cra)
-
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/v6.x/examples/material-ui-cra)
-
-## The idea behind the example
-
-<!-- #default-branch-switch -->
-
-This example demonstrates how you can use [Create React App](https://github.com/facebookincubator/create-react-app) with Material UI.
-It includes `@mui/material` and its peer dependencies, including [Emotion](https://emotion.sh/docs/introduction), the default style engine in Material UI v6.
-If you prefer, you can [use styled-components instead](https://mui.com/material-ui/integrations/interoperability/#styled-components).
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation and continue by browsing the [templates](https://mui.com/material-ui/getting-started/templates/) section.
+---
+🚀 This project demonstrates full-stack development with **React + Spring Boot**, real-time WebSocket communication, and clean project structure.
