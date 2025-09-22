@@ -35,5 +35,6 @@ npm start
 - `/invite/:roomID` → Join a room  
 - `/planning-poker` → Poker board  
 
+![Alt text](image.png)
 ---
 🚀 This project demonstrates full-stack development with **React + Spring Boot**, real-time WebSocket communication, and clean project structure.
